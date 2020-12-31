@@ -25,3 +25,22 @@ body {
     font-family: $ff-primary;
     background-color: $clr-light;
 }
+
+html,
+body,
+body > * {
+    height: 100%;
+}
+
+button {
+    border: none;
+    font-family: $ff-primary;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:focus {
+        outline: none
+    }
+}

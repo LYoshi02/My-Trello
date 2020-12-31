@@ -1,0 +1,68 @@
+@import "../../styles/variables";
+
+.BoardsContainer {
+    width: 90vw;
+    max-width: 120rem;
+    margin: 2rem auto;
+}
+
+.BoardTitle {
+    p {
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+    }
+
+    svg {
+        font-size:  2.5rem;
+        margin-right: 1.25rem;
+    }
+}
+
+.Boards {
+    margin-top: 2rem;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+
+    li {
+        display: inline-block;
+        border-radius: $border-radius;
+        height: 9rem;
+        width: 20rem;
+        background-color: #89609e;
+        margin-right: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    a:link,
+    a:visited,
+    p {
+        display: block;
+        height: 100%;
+        width: 100%;
+        padding-top: 1rem;
+        padding-left: 1rem;
+        text-decoration: none;
+        color: $clr-light;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+}
+
+.CreateBoard {
+    background-color: #f0f2f5 !important;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    p {
+        color: #172b4d;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: normal;
+        padding: 0;
+    }
+}

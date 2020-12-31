@@ -1,0 +1,35 @@
+@import "../../styles/variables";
+
+.Board {
+    padding: 2rem;
+    display: flex;
+    overflow-x: auto;
+    height: 100%;
+}
+
+.TaskList {
+    background-color: #ebecf0;
+    min-width: 30rem;
+    padding: 2rem;
+    border-radius: $border-radius;
+    margin-right: 1rem;
+
+    h3 {
+        font-size: 2rem;
+        font-weight: normal;
+    }
+}
+
+.Tasks {
+    margin-top: 1rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.Task {
+    background-color: $clr-light;
+    padding: 1rem;
+    border-radius: $border-radius;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}

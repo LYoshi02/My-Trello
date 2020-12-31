@@ -1,0 +1,27 @@
+@import "styles/variables";
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+html {
+    font-size: 62.5%;
+    box-sizing: border-box;
+
+    @media only screen and (max-width: $bp-medium) {
+        font-size: 56.25%;
+    }
+
+    @media only screen and (max-width: $bp-small) {
+        font-size: 50%;
+    }
+}
+
+body {
+    font-family: $ff-primary;
+    background-color: $clr-light;
+}

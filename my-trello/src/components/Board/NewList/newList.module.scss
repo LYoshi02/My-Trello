@@ -1,0 +1,33 @@
+@import "../../../styles/variables";
+
+.Container {
+    min-width: 30rem;
+    margin-right: 1rem;
+}
+
+.NewList {
+    font-size: 1.6rem;
+    background-color: antiquewhite;
+    padding: 1rem;
+    border-radius: $border-radius;
+    
+    p {
+        display: flex;
+        align-items: center;
+    }
+
+    svg {
+        margin-right: 1rem;
+    }
+}
+
+.NewListForm {
+    background-color: aquamarine;
+    padding: 1rem;
+
+    input {
+        display: block;
+        width: 100%;
+        padding: .5rem 1rem;
+    }
+}

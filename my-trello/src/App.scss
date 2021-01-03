@@ -32,6 +32,10 @@ body > * {
     height: 100%;
 }
 
+input {
+    font-family: $ff-primary;
+}
+
 button {
     border: none;
     font-family: $ff-primary;

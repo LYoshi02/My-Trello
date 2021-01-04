@@ -5,6 +5,9 @@ const cardSchema = new Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+  },
 });
 
 module.exports = model("Card", cardSchema);

@@ -1,7 +1,9 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
 import { IoAddOutline, IoCloseOutline } from "react-icons/io5";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+
+import TransparentInput from "../../UI/TransparentInput/transparentInput";
 
 import classes from "./list.module.scss";
 
@@ -17,7 +19,6 @@ const List = (props) => {
   } = props;
 
   const history = useHistory();
-  const editInputRef = useRef(null);
 
   const openCard = (cardId) => {
     history.push(`/card/${cardId}`);
@@ -59,27 +60,10 @@ const List = (props) => {
     );
   }
 
-  const checkEnterKey = (event) => {
-    if (event.key === "Enter") {
-      editInputRef.current.blur();
-    }
-  };
-
   return (
     <div className={classes.CardList}>
       <div className={classes.CardContent}>
-        <div>
-          <input
-            type="text"
-            defaultValue={listData.name}
-            onClick={(e) =>
-              e.target.setSelectionRange(0, e.target.value.length)
-            }
-            onBlur={editListName}
-            onKeyPress={checkEnterKey}
-            ref={editInputRef}
-          />
-        </div>
+        <TransparentInput inputValue={listData.name} blurred={editListName} />
 
         <div className={classes.Cards}>
           <Droppable droppableId={listData._id}>

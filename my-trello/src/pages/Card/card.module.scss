@@ -1,44 +1,9 @@
 @import "../../styles/variables";
 
 .UserCard {
-    padding: 1rem;
+    padding: 2rem 4rem;
 
-    svg {
-        margin-right: 1rem;
-        font-size: 2rem;
-    }
-}
-
-.CardName {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.CardDescription {
-    
-}
-
-.CardMarkdown {
-    margin-left: 4rem;
-    font-size: 1.6rem;
-    line-height: 1.5;
-    
-    ul {
-        margin-left: 3rem;
-    }
-
-    pre {
-        border-radius: $border-radius;
-        background-color: $clr-primary-light;
-        padding: 2rem;
-    }
-
-    p {
-        margin-bottom: 1rem;
-    }
-
-    hr {
-        margin: 1rem 0;
+    & > * {
+        margin-bottom: 3rem;
     }
 }

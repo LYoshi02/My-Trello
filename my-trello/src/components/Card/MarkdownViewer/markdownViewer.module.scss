@@ -1,0 +1,121 @@
+@import "../../../styles/variables";
+
+.MarkdownViewer {
+    padding-left: 4rem;
+    font-size: 1.6rem;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.MarkdownLink {
+    width: 100%;
+    height: 8rem;
+    background-color: $clr-primary-light;
+    padding: 1rem;
+    border-radius: $border-radius;
+}
+
+.Markdown {
+    img {
+        max-width: 100%;
+    }
+    
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    table, th, td {
+        border: 1px solid #EAEAEA;
+        border-radius: 3px;
+        padding: 5px;
+    }
+    
+    tr:nth-child(even) {
+        background-color: #F8F8F8;
+    }
+        
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: bold;
+    }
+    
+    h2, h3, h4, h5, h6 {
+        margin-top: 3rem;
+    }
+    
+    h1 {
+        color: #000000;
+        font-size: 3rem;
+    }
+    
+    h2 {
+        color: #000000;
+        font-size: 2.4rem;
+    }
+    
+    h3 {
+        font-size: 1.8rem;
+    }
+    
+    h4 {
+        font-size: 1.6rem;
+    }
+    
+    h5 {
+        font-size: 1.4rem;
+    }
+    
+    h6 {
+        color: #777777;
+        background-color: inherit;
+        font-size: 1.4rem;
+    }
+    
+    hr {
+        height: 2px;
+        border: 0;
+        color: #CCCCCC;
+        background-color: #CCCCCC;
+    }
+    
+    p, blockquote, ul, ol, dl, li, table, pre {
+        margin: 1.5rem 0;
+    }
+    
+    code, pre {
+        border-radius: 3px;
+        background-color: #F8F8F8;
+        color: inherit;
+    }
+    
+    code {
+        border: 1px solid #EAEAEA;
+        margin: 0 2px;
+        padding: 0 5px;
+    }
+    
+    pre {
+        border: 1px solid #CCCCCC;
+        line-height: 1.25em;
+        overflow: auto;
+        padding: 6px 10px;
+    }
+    
+    pre > code {
+        border: 0;
+        margin: 0;
+        padding: 0;
+    }
+    
+    a, a:visited {
+        color: #4183C4;
+        background-color: inherit;
+        text-decoration: none;
+    }
+
+    ul {
+        padding-left: 4rem;
+    }
+}

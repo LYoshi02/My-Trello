@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.get("/card/:cardId", cardController.getCard);
 
-router.patch("/card/:cardId/description", cardController.saveDescription);
+router.put("/card/:cardId", cardController.updateCard);
 
 module.exports = router;

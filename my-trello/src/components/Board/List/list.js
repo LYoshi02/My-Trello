@@ -1,8 +1,9 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { IoAddOutline, IoCloseOutline } from "react-icons/io5";
+import { IoAddOutline } from "react-icons/io5";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 
+import ActionButtons from "../../UI/ActionButtons/actionButtons";
 import TransparentInput from "../../UI/TransparentInput/transparentInput";
 
 import classes from "./list.module.scss";
@@ -51,19 +52,28 @@ const List = (props) => {
   );
   if (columnCreateCard.toString() === listData._id.toString()) {
     cardAction = (
-      <div>
-        <button type="button" onClick={createCard}>
-          Crear Tarjeta
-        </button>
-        <IoCloseOutline onClick={() => setCardCreator("")} />
-      </div>
+      <ActionButtons
+        btnType="button"
+        btnContent="crear tarjeta"
+        primaryAction={createCard}
+        cancelAction={() => setCardCreator("")}
+      />
     );
   }
+
+  const listInputData = {
+    elementType: "simple-input",
+    elementConfig: {
+      type: "text",
+      required: true,
+    },
+    value: listData.name,
+  };
 
   return (
     <div className={classes.CardList}>
       <div className={classes.CardContent}>
-        <TransparentInput inputValue={listData.name} blurred={editListName} />
+        <TransparentInput inputData={listInputData} blurred={editListName} />
 
         <div className={classes.Cards}>
           <Droppable droppableId={listData._id}>

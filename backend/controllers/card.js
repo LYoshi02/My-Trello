@@ -16,22 +16,15 @@ exports.getCard = async (req, res, next) => {
   }
 };
 
-exports.saveDescription = async (req, res, next) => {
+exports.updateCard = (req, res, next) => {
   const cardId = req.params.cardId;
-  const updatedDescription = req.body.description;
+  const card = req.body.card;
 
-  try {
-    const card = await Card.findById(cardId);
-
-    if (!card) {
+  Card.findByIdAndUpdate(cardId, card)
+    .then((result) => {
+      res.status(200).json({ card: card });
+    })
+    .catch((err) => {
       throw new Error("Card not found");
-    }
-
-    card.description = updatedDescription;
-    await card.save();
-
-    res.status(200).json({ card: card });
-  } catch (err) {
-    console.log(err);
-  }
+    });
 };

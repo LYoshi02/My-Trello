@@ -7,6 +7,7 @@ const cardSchema = new Schema({
   },
   description: {
     type: String,
+    default: "",
   },
 });
 

@@ -1,6 +1,8 @@
 import React from "react";
 import { IoCloseOutline } from "react-icons/io5";
 
+import Backdrop from "../../UI/Backdrop/backdrop";
+
 import classes from "./modal.module.scss";
 
 const Modal = (props) => {
@@ -36,7 +38,7 @@ const Modal = (props) => {
         <button type="submit">Crear Tablero</button>
       </form>
 
-      <div className={classes.ModalBackdrop} onClick={props.clicked}></div>
+      <Backdrop clicked={props.closeModal} />
     </div>
   );
 };

@@ -36,7 +36,7 @@ const TransparentInput = (props) => {
           {...elementConfig}
           value={value}
           onChange={inputChanged}
-          onClick={selectInputText}
+          onFocus={selectInputText}
           onBlur={blurred}
           onKeyPress={checkEnterKey}
           ref={editInputRef}
@@ -48,7 +48,7 @@ const TransparentInput = (props) => {
         <input
           {...elementConfig}
           defaultValue={value}
-          onClick={selectInputText}
+          onFocus={selectInputText}
           onBlur={blurred}
           onKeyPress={checkEnterKey}
           ref={editInputRef}

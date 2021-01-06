@@ -85,7 +85,7 @@ const Boards = (props) => {
 
       {isCreating ? (
         <Modal
-          clicked={toggleModal}
+          closeModal={toggleModal}
           createBoard={createBoardHandler}
           boardName={boardName}
           boardNameChanged={(event) => setBoardName(event.target.value)}

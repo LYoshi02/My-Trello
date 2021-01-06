@@ -7,9 +7,9 @@ import {
 } from "react-router-dom";
 
 import Layout from "./components/Layout/layout";
-import Board from "./pages/Board/board";
-import Boards from "./pages/Boards/boards";
-import Card from "./pages/Card/card";
+import Board from "./containers/Board/board";
+import Boards from "./containers/Boards/boards";
+import Card from "./containers/Card/card";
 
 import "./App.scss";
 

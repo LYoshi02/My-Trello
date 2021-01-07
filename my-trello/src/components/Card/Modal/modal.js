@@ -7,7 +7,7 @@ const CardModal = (props) => {
   return (
     <div className={classes.CardModal}>
       <div className={classes.ModalContent}>{props.children}</div>
-      <Backdrop clicked={props.closeModal} />
+      <Backdrop clicked={props.close} />
     </div>
   );
 };

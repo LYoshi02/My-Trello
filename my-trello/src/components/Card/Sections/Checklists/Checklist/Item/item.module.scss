@@ -1,0 +1,15 @@
+.Item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    input[type=checkbox] {
+        height: 1.75rem;
+        width: 1.75rem;
+        margin-right: 2rem;
+    }
+
+    span {
+        font-size: 1.4rem;
+    }
+}

@@ -1,0 +1,12 @@
+@import "../../../styles/variables";
+
+.Button {
+    padding: .75rem 4rem;
+    border-radius: $border-radius;
+    margin-right: 1rem;
+    text-transform: capitalize;
+    background-color: $clr-primary;
+    color: $clr-light;
+    font-weight: bold;
+    font-size: 1.6rem;
+}

@@ -14,8 +14,33 @@
     lefT: 50%;
     z-index: 1000;
     transform: translate(-50%, -50%);
-    width: 60%;
-    height: 60%;
+    width: 30%;
     background-color: #fff;
     border-radius: $border-radius;
+    padding: 2rem;
+    
+    h2 {
+        text-align: center;
+        font-size: 2rem;
+        border-bottom: 1px solid #ddd;
+        margin: 0 auto;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        text-transform: capitalize;
+    }
+
+    label {
+        display: block;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    input {
+        padding: .5rem 1rem;
+        width: 100%;
+    }
+
+    button {
+        margin-top: 2rem;
+    }
 }

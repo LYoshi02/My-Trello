@@ -1,6 +1,8 @@
 import React from "react";
 import { IoCloseOutline } from "react-icons/io5";
 
+import Button from "../Button/button";
+
 import classes from "./actionButtons.module.scss";
 
 const ActionButtons = (props) => {
@@ -8,9 +10,9 @@ const ActionButtons = (props) => {
 
   return (
     <div className={classes.ActionButtons}>
-      <button type={btnType} onClick={primaryAction}>
+      <Button type={btnType} clicked={primaryAction}>
         {btnContent}
-      </button>
+      </Button>
       <IoCloseOutline onClick={cancelAction} />
     </div>
   );

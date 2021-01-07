@@ -1,0 +1,17 @@
+.Actions {
+    & > * {
+        margin-bottom: 4rem;
+    }
+    
+    h3 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+    }
+
+    button {
+        display: block;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+}

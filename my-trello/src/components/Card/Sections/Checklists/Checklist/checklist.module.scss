@@ -1,0 +1,26 @@
+@import "../../../../../styles/variables";
+
+.ProgressBarWrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    p {
+        font-size: 1.4rem;
+        margin-right: 2rem;
+    }
+}
+
+.ProgressBar {
+    background-color: #ddd;
+    border-radius: $border-radius;
+    height: 1rem;
+    width: 100%;
+    
+    span {
+        border-radius: $border-radius;
+        background-color: $clr-primary;
+        height: 100%;
+        display: block;
+    }
+}

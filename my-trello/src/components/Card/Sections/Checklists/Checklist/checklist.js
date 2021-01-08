@@ -9,17 +9,19 @@ import TransparentInput from "../../../../UI/TransparentInput/transparentInput";
 
 import classes from "./checklist.module.scss";
 
-const Checklist = ({
-  title,
-  items,
-  addItem,
-  creating,
-  createItem,
-  closeCreator,
-  checkItem,
-  changeListName,
-  changeItemName,
-}) => {
+const ChecklistComponent = (props) => {
+  const {
+    data,
+    setCreator,
+    creating,
+    createItem,
+    checkItem,
+    changeListName,
+    changeItemName,
+    deleteChecklist,
+    deleteItem,
+  } = props;
+
   const checklistNameInput = {
     elementKey: "checklist",
     elementType: "simple-input",
@@ -27,8 +29,9 @@ const Checklist = ({
       type: "text",
       required: true,
     },
-    value: title,
+    value: data.title,
   };
+
   const actionButtonInput = {
     elementKey: "checklist-action",
     elementType: "simple-input",
@@ -44,17 +47,18 @@ const Checklist = ({
   let progressPercentage = 0;
   let checkElements = null;
 
-  if (items.length > 0) {
-    const itemsCompleted = items.filter((check) => check.completed).length;
-    progressPercentage = parseInt((itemsCompleted / items.length) * 100);
+  if (data.items.length > 0) {
+    const itemsCompleted = data.items.filter((check) => check.completed).length;
+    progressPercentage = parseInt((itemsCompleted / data.items.length) * 100);
 
-    checkElements = items.map((item) => (
+    checkElements = data.items.map((item) => (
       <Item
         key={item._id}
         completed={item.completed}
         name={item.name}
         check={() => checkItem(item._id)}
         changeName={(e) => changeItemName(item._id, e.target.value)}
+        deleteAction={() => deleteItem(item._id)}
       />
     ));
   }
@@ -62,7 +66,7 @@ const Checklist = ({
   const checkItemName = (event) => {
     const itemName = event.target.value;
     if (itemName.trim() === "") {
-      closeCreator();
+      setCreator(null);
     } else {
       createItem(itemName);
     }
@@ -70,10 +74,11 @@ const Checklist = ({
 
   const progressBarStyles = {
     width: `${progressPercentage}%`,
+    backgroundColor: progressPercentage < 100 ? "#f05454" : "#16c79a",
   };
 
   let actionButton = (
-    <Button type="button" clicked={addItem}>
+    <Button type="button" clicked={() => setCreator(data._id)}>
       Añada un Elemento
     </Button>
   );
@@ -87,7 +92,7 @@ const Checklist = ({
         <ActionButtons
           btnType="button"
           btnContent="Añadir"
-          cancelAction={closeCreator}
+          cancelAction={() => setCreator(null)}
         />
       </>
     );
@@ -101,6 +106,9 @@ const Checklist = ({
           inputData={checklistNameInput}
           blurred={changeListName}
         />
+        <Button type="button" clicked={deleteChecklist}>
+          Eliminar
+        </Button>
       </CardHeading>
 
       <div>
@@ -119,4 +127,4 @@ const Checklist = ({
   );
 };
 
-export default Checklist;
+export default ChecklistComponent;

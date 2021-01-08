@@ -4,7 +4,9 @@ exports.getCard = async (req, res, next) => {
   const cardId = req.params.cardId;
 
   try {
-    const card = await Card.findById(cardId);
+    const card = await (await Card.findById(cardId))
+      .populate("checklists")
+      .execPopulate();
 
     if (!card) {
       throw new Error("Card not found");
@@ -16,15 +18,20 @@ exports.getCard = async (req, res, next) => {
   }
 };
 
-exports.updateCard = (req, res, next) => {
+exports.updateCard = async (req, res, next) => {
   const cardId = req.params.cardId;
-  const card = req.body.card;
+  const updatedCard = req.body.card;
 
-  Card.findByIdAndUpdate(cardId, card)
-    .then((result) => {
-      res.status(200).json({ card: card });
-    })
-    .catch((err) => {
-      throw new Error("Card not found");
-    });
+  try {
+    const card = await Card.findById(cardId);
+
+    card.title = updatedCard.title;
+    card.description = updatedCard.description;
+    card.checklists = updatedCard.checklists;
+
+    await card.save();
+    res.status(200).json({ card: card });
+  } catch (err) {
+    console.log(err);
+  }
 };

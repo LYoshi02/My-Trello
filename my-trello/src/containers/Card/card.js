@@ -27,22 +27,22 @@ const Card = (props) => {
   }, [cardId]);
 
   const saveInput = (inputName, inputValue) => {
-    if (!cardData[inputName] || cardData[inputName] !== inputValue.trim()) {
+    if (!cardData[inputName] || cardData[inputName] !== inputValue) {
       const updatedCard = updateObject(cardData, {
         [inputName]: inputValue,
       });
-      console.log(updatedCard);
-      // axios
-      //   .put(`/card/${cardData._id}`, {
-      //     card: updatedCard,
-      //   })
-      //   .then((res) => {
-      //     console.log(res);
-      //     setCardData(res.data.card);
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
+      // console.log(updatedCard);
+      axios
+        .put(`/card/${cardData._id}`, {
+          card: updatedCard,
+        })
+        .then((res) => {
+          console.log(res);
+          setCardData(res.data.card);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 
@@ -64,6 +64,8 @@ const Card = (props) => {
         <Checklist
           closeModal={() => changeActiveModal(null)}
           isModalOpen={activeModal === "checklist"}
+          fetchedChecklists={cardData.checklists}
+          updateChecklists={saveInput}
         />
       </div>
     );

@@ -3,7 +3,7 @@ import TransparentInput from "../../../../../UI/TransparentInput/transparentInpu
 
 import classes from "./item.module.scss";
 
-const Item = ({ name, completed, check }) => {
+const Item = ({ name, completed, check, changeName }) => {
   const itemInputConfig = {
     elementKey: "checklist-item",
     elementType: "simple-input",
@@ -17,7 +17,7 @@ const Item = ({ name, completed, check }) => {
   return (
     <div className={classes.Item}>
       <input type="checkbox" onChange={check} checked={completed} />
-      <TransparentInput inputData={itemInputConfig} />
+      <TransparentInput inputData={itemInputConfig} blurred={changeName} />
     </div>
   );
 };

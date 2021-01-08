@@ -17,6 +17,8 @@ const Checklist = ({
   createItem,
   closeCreator,
   checkItem,
+  changeListName,
+  changeItemName,
 }) => {
   const checklistNameInput = {
     elementKey: "checklist",
@@ -48,10 +50,11 @@ const Checklist = ({
 
     checkElements = items.map((item) => (
       <Item
-        key={item.id}
+        key={item._id}
         completed={item.completed}
         name={item.name}
-        check={() => checkItem(item.id)}
+        check={() => checkItem(item._id)}
+        changeName={(e) => changeItemName(item._id, e.target.value)}
       />
     ));
   }
@@ -94,7 +97,10 @@ const Checklist = ({
     <div>
       <CardHeading>
         <IoCheckboxOutline />
-        <TransparentInput inputData={checklistNameInput} />
+        <TransparentInput
+          inputData={checklistNameInput}
+          blurred={changeListName}
+        />
       </CardHeading>
 
       <div>

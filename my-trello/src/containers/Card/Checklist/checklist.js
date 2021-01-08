@@ -1,36 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import ChecklistModal from "../../../components/Card/Sections/Checklists/ChecklistModal/checklistModal";
 import Checklists from "../../../components/Card/Sections/Checklists/checklists";
 import { updateObject } from "../../../util/helpers";
 
 const Checklist = (props) => {
-  const { closeModal, isModalOpen } = props;
+  const {
+    closeModal,
+    isModalOpen,
+    fetchedChecklists,
+    updateChecklists,
+  } = props;
   const [titleInput, setTitleInput] = useState("");
   const [createItemId, setCreateItemId] = useState(null);
-  const [checklists, setChecklists] = useState([
-    {
-      id: 1,
-      title: "Checklist1",
-      items: [
-        {
-          id: 1,
-          name: "Tarea 1",
-          completed: false,
-        },
-        {
-          id: 2,
-          name: "Tarea 2",
-          completed: true,
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: "Checklist2",
-      items: [],
-    },
-  ]);
+  const [checklists, setChecklists] = useState(null);
+
+  useEffect(() => {
+    console.log(fetchedChecklists);
+    setChecklists(fetchedChecklists);
+  }, [fetchedChecklists]);
 
   const inputChanged = (event) => {
     setTitleInput(event.target.value);
@@ -38,17 +26,15 @@ const Checklist = (props) => {
 
   const submitChecklist = (event) => {
     event.preventDefault();
-    const newChecklist = {
-      title: titleInput,
-      checks: [],
-    };
-
-    // inputSaveChecklist("checklist", newChecklist);
+    const newChecklist = { title: titleInput, items: [] };
+    const updatedChecklists = [...checklists, newChecklist];
+    updateChecklists("checklists", updatedChecklists);
+    closeModal();
   };
 
   const createItemHandler = (itemName) => {
     const checklistChangedIndex = checklists.findIndex(
-      (cl) => cl.id === createItemId
+      (cl) => cl._id === createItemId
     );
     const singleChecklistUpdated = updateObject(
       checklists[checklistChangedIndex],
@@ -56,32 +42,29 @@ const Checklist = (props) => {
         items: [
           ...checklists[checklistChangedIndex].items,
           {
-            id: Date.now(),
             name: itemName,
             completed: false,
           },
         ],
       }
     );
-
-    const checklistsUpdated = checklists.map((cl, index) => {
+    const updatedChecklists = checklists.map((cl, index) => {
       if (index === checklistChangedIndex) {
         return singleChecklistUpdated;
       }
-
       return cl;
     });
 
+    updateChecklists("checklists", updatedChecklists);
     setCreateItemId(null);
-    setChecklists(checklistsUpdated);
   };
 
   const checkItemHandler = (listId, itemId) => {
     const checklistChangedIndex = checklists.findIndex(
-      (cl) => cl.id === listId
+      (cl) => cl._id === listId
     );
     const itemChangedIndex = checklists[checklistChangedIndex].items.findIndex(
-      (item) => item.id === itemId
+      (item) => item._id === itemId
     );
 
     const singleChecklistUpdated = updateObject(
@@ -94,7 +77,7 @@ const Checklist = (props) => {
       itemChangedIndex
     ].completed = !singleChecklistUpdated.items[itemChangedIndex].completed;
 
-    const checklistsUpdated = checklists.map((cl, index) => {
+    const updatedChecklists = checklists.map((cl, index) => {
       if (index === checklistChangedIndex) {
         return singleChecklistUpdated;
       }
@@ -102,7 +85,62 @@ const Checklist = (props) => {
       return cl;
     });
 
-    setChecklists(checklistsUpdated);
+    updateChecklists("checklists", updatedChecklists);
+  };
+
+  const changeListName = (listId, newTitle) => {
+    const checklistChangedIndex = checklists.findIndex(
+      (cl) => cl._id === listId
+    );
+
+    const updatedChecklists = [...checklists];
+    updatedChecklists[checklistChangedIndex] = {
+      ...checklists[checklistChangedIndex],
+      title: newTitle,
+    };
+
+    updateChecklists("checklists", updatedChecklists);
+  };
+
+  const changeItemName = (itemId, itemName, listId) => {
+    const checklistChangedIndex = checklists.findIndex(
+      (cl) => cl._id === listId
+    );
+    const itemChangedIndex = checklists[checklistChangedIndex].items.findIndex(
+      (item) => item._id === itemId
+    );
+
+    const updatedItem = updateObject(
+      checklists[checklistChangedIndex].items[itemChangedIndex],
+      {
+        name: itemName,
+      }
+    );
+    const updatedItems = checklists[checklistChangedIndex].items.map(
+      (item, index) => {
+        if (index === itemChangedIndex) {
+          return updatedItem;
+        }
+
+        return item;
+      }
+    );
+    const singleChecklistUpdated = updateObject(
+      checklists[checklistChangedIndex],
+      {
+        items: [...updatedItems],
+      }
+    );
+
+    const updatedChecklists = checklists.map((cl, index) => {
+      if (index === checklistChangedIndex) {
+        return singleChecklistUpdated;
+      }
+
+      return cl;
+    });
+
+    updateChecklists("checklists", updatedChecklists);
   };
 
   const setItemCreator = (checklistId) => {
@@ -129,6 +167,8 @@ const Checklist = (props) => {
         createNewItem={createItemHandler}
         setItemCreator={setItemCreator}
         checkItemList={checkItemHandler}
+        changeListName={changeListName}
+        changeItemName={changeItemName}
       />
       {modal}
     </>
@@ -136,22 +176,3 @@ const Checklist = (props) => {
 };
 
 export default Checklist;
-// <CardModal close={closeModal}>
-//   <h2>Añadir Checklist</h2>
-
-//   <form onSubmit={submitChecklist}>
-//     <div>
-//       <label htmlFor="title">Título:</label>
-//       <input
-//         type="text"
-//         placeholder="Ingrese el título del checklist"
-//         autoFocus
-//         id="title"
-//         value={titleInput}
-//         onChange={inputChanged}
-//       />
-//     </div>
-
-//     <Button type="submit">Añadir</Button>
-//   </form>
-// </CardModal>

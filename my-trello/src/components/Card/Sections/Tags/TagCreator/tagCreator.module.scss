@@ -1,0 +1,18 @@
+@import "../../../../../styles/variables";
+
+.Colors {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(5rem, 1fr));
+    gap: 1rem;
+
+    margin-top: 1rem;
+
+    span {
+        height: 3rem;
+        border-radius: $border-radius;
+    }
+
+    span:hover {
+        cursor: pointer;
+    }
+}

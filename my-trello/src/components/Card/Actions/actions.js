@@ -10,6 +10,10 @@ const actionItems = {
         name: "Checklist",
         modalType: "checklist",
       },
+      {
+        name: "Etiquetas",
+        modalType: "tag",
+      },
     ],
   },
   cardActions: {

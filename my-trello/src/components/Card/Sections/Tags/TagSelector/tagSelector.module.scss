@@ -1,0 +1,44 @@
+@import "../../../../../styles/variables";
+
+.Tags {
+    list-style: none;
+}
+
+.Tag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:not(:last-child) {
+        margin-bottom: 1rem;
+    }
+
+    span {
+        display: inline-block;
+        flex: 1;
+        color: $clr-light;
+        font-weight: bold;
+        font-size: 1.4rem;
+        background-color: red;
+        padding: .75rem;
+        border-radius: $border-radius;
+        text-transform: capitalize;
+    }
+
+    span:hover,
+    svg:hover {
+        cursor: pointer;
+        //* box-shadow: -1rem 0 #519839; Borde a la derecha de la etiqueta
+    }
+
+    svg {
+        font-size: 2.5rem;
+        margin-left: 1rem;
+    }
+}
+
+.Action {
+    button {
+        width: 100%;
+    }
+}

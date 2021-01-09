@@ -8,6 +8,7 @@ import Name from "./Name/name";
 import { updateObject } from "../../util/helpers";
 
 import classes from "./card.module.scss";
+import Tag from "./Tag/tag";
 
 const Card = (props) => {
   const [cardData, setCardData] = useState(null);
@@ -66,6 +67,10 @@ const Card = (props) => {
           isModalOpen={activeModal === "checklist"}
           fetchedChecklists={cardData.checklists}
           updateChecklists={saveInput}
+        />
+        <Tag
+          isModalOpen={activeModal === "tag"}
+          closeModal={() => changeActiveModal(null)}
         />
       </div>
     );

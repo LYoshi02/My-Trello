@@ -1,5 +1,28 @@
 @import "../../../../../styles/variables";
 
+.TagHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+
+    h2 {
+        border: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    svg {
+        font-size: 2rem;
+    }
+
+    svg:hover {
+        cursor: pointer;
+    }
+}
+
 .Colors {
     display: grid;
     grid-template-columns: repeat( auto-fit, minmax(5rem, 1fr));
@@ -10,9 +33,17 @@
     span {
         height: 3rem;
         border-radius: $border-radius;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     span:hover {
         cursor: pointer;
+    }
+
+    svg {
+        font-size: 2rem;
+        color: $clr-light;
     }
 }

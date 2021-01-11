@@ -32,7 +32,7 @@ const Card = (props) => {
       const updatedCard = updateObject(cardData, {
         [inputName]: inputValue,
       });
-      // console.log(updatedCard);
+      console.log(updatedCard);
       axios
         .put(`/card/${cardData._id}`, {
           card: updatedCard,
@@ -69,8 +69,10 @@ const Card = (props) => {
           updateChecklists={saveInput}
         />
         <Tag
+          fetchedTags={cardData.tags}
           isModalOpen={activeModal === "tag"}
           closeModal={() => changeActiveModal(null)}
+          updateTags={saveInput}
         />
       </div>
     );

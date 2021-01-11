@@ -5,15 +5,19 @@ import CardModal from "../../../Modal/modal";
 
 import classes from "./tagSelector.module.scss";
 
-const TagSelector = ({ tags, setTagCreator, closeModal }) => {
+const TagSelector = ({ tags, setTagCreator, setTagEditor, closeModal }) => {
   let tagElements = null;
   if (tags) {
-    tagElements = tags.map((tag) => (
-      <li className={classes.Tag}>
-        <span>{tag.name}&nbsp;</span>
-        <IoCreateOutline onClick={() => setTagCreator("edit")} />
-      </li>
-    ));
+    tagElements = tags.map((tag) => {
+      const clrClass = `tag-${tag.color}`;
+
+      return (
+        <li key={tag._id} className={classes.Tag}>
+          <span className={clrClass}>{tag.name}&nbsp;</span>
+          <IoCreateOutline onClick={() => setTagEditor(tag._id)} />
+        </li>
+      );
+    });
   }
 
   return (
@@ -21,7 +25,7 @@ const TagSelector = ({ tags, setTagCreator, closeModal }) => {
       <h2>Etiquetas</h2>
       <ul className={classes.Tags}>{tagElements}</ul>
       <div className={classes.Action}>
-        <Button type="button" clicked={() => setTagCreator("create")}>
+        <Button type="button" clicked={setTagCreator}>
           Crear etiqueta nueva
         </Button>
       </div>

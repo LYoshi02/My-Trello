@@ -1,6 +1,7 @@
 const Board = require("../models/board");
 const List = require("../models/list");
 const Card = require("../models/card");
+const Tag = require("../models/tag");
 
 exports.getBoards = async (req, res, next) => {
   try {
@@ -14,17 +15,29 @@ exports.getBoards = async (req, res, next) => {
 
 exports.createBoard = async (req, res, next) => {
   const name = req.body.name;
-  const board = new Board({ name: name });
   const defaultLists = [
     { name: "Lista de Tareas", position: 1 },
     { name: "En Proceso", position: 2 },
     { name: "Finalizado", position: 3 },
   ];
+  const defaultTags = [
+    { name: "", color: "green" },
+    { name: "", color: "yellow" },
+    { name: "", color: "orange" },
+    { name: "", color: "red" },
+    { name: "", color: "purple" },
+    { name: "", color: "blue" },
+  ];
+
+  const board = new Board({ name: name });
+  const tags = new Tag({ tags: defaultTags, boardId: board });
+  const list = new List({ lists: defaultLists, boardId: board });
+  board.tags = tags;
 
   try {
     await board.save();
-    const list = new List({ lists: defaultLists, boardId: board });
     await list.save();
+    await tags.save();
 
     res
       .status(201)
@@ -38,7 +51,7 @@ exports.getBoard = async (req, res, next) => {
   const boardId = req.params.boardId;
 
   try {
-    const board = await await Board.findById(boardId);
+    const board = await Board.findById(boardId);
     const boardLists = await List.findOne({ boardId: boardId })
       .populate({
         path: "lists",
@@ -62,7 +75,10 @@ exports.saveCard = async (req, res, next) => {
       throw new Error("List not found");
     }
 
-    const newCard = new Card({ name: req.body.name });
+    const newCard = new Card({
+      name: req.body.name,
+      boardId: req.body.boardId,
+    });
     await newCard.save();
 
     const listChangedId = req.body.listChangedId;

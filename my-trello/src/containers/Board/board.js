@@ -117,6 +117,7 @@ const Board = (props) => {
       .post(`board/list/${userLists._id}`, {
         name: cardName,
         listChangedId: columnCreateCard,
+        boardId: boardId,
       })
       .then((res) => {
         const updatedUserLists = copyUserListsArray(userLists);

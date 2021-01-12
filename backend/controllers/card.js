@@ -23,13 +23,10 @@ exports.updateCard = async (req, res, next) => {
   const updatedCard = req.body.card;
 
   try {
-    const card = await Card.findById(cardId);
+    const card = await Card.findByIdAndUpdate(cardId, updatedCard, {
+      new: true,
+    });
 
-    card.title = updatedCard.title;
-    card.description = updatedCard.description;
-    card.checklists = updatedCard.checklists;
-
-    await card.save();
     res.status(200).json({ card: card });
   } catch (err) {
     console.log(err);

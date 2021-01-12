@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+import axios from "../../../axios-instance";
 import TagCreator from "../../../components/Card/Sections/Tags/TagCreator/tagCreator";
 import TagModal from "../../../components/Card/Sections/Tags/TagSelector/tagSelector";
 import { updateObject } from "../../../util/helpers";
@@ -7,16 +8,25 @@ import { updateObject } from "../../../util/helpers";
 import "../../../styles/tag-colors.scss";
 
 // TODO : save the tags in the entire board
-const Tag = ({ fetchedTags, isModalOpen, closeModal, updateTags }) => {
+const Tag = ({ boardId, isModalOpen, closeModal }) => {
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [createCardName, setCreateCardName] = useState("");
   const [createCardColor, setCreateCardColor] = useState("");
   const [tags, setTags] = useState([]);
 
+  // TODO: modificar la ruta de la request (optimizacion)
   useEffect(() => {
-    setTags(fetchedTags);
-  }, [fetchedTags]);
+    axios
+      .get(`board/${boardId}/tags`)
+      .then((res) => {
+        console.log(res);
+        setTags(res.data.tags);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [boardId]);
 
   const tagCreatorHandler = () => {
     setCreating(true);
@@ -56,24 +66,24 @@ const Tag = ({ fetchedTags, isModalOpen, closeModal, updateTags }) => {
   };
 
   const tagActionHandler = () => {
-    let updatedTags = [...tags];
     const newTag = { name: createCardName, color: createCardColor };
-
-    if (creating) {
-      updatedTags.push(newTag);
-    } else {
-      const updatedTagIndex = tags.findIndex(
-        (tag) => tag._id.toString() === editingId
-      );
-      const updatedTag = updateObject(tags[updatedTagIndex], newTag);
-      updatedTags.splice(updatedTagIndex, 1, updatedTag);
+    let url = `/board/${boardId}/tags`;
+    let method = "POST";
+    if (!creating) {
+      url = `/board/${boardId}/tags/${editingId}`;
+      method = "PATCH";
     }
 
-    console.log(updatedTags);
-    closeCreatorModal();
-    setCreateCardName("");
-    setCreateCardColor("");
-    updateTags("tags", updatedTags);
+    axios({ url, method, data: newTag })
+      .then((res) => {
+        closeCreatorModal();
+        setCreateCardName("");
+        setCreateCardColor("");
+        setTags(res.data.tags);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   let modal = null;

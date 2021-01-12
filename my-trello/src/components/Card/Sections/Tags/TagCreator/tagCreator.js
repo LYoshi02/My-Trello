@@ -36,12 +36,8 @@ const TagCreator = ({
   const colorElements = tagColors.map((clr) => {
     const clrClass = `tag-${clr}`;
     return (
-      <span
-        key={clr}
-        className={clrClass}
-        onClick={() => changeCardColor(clr.name)}
-      >
-        {cardColor === clr.name ? <IoCheckmarkSharp /> : ""}
+      <span key={clr} className={clrClass} onClick={() => changeCardColor(clr)}>
+        {cardColor === clr ? <IoCheckmarkSharp /> : ""}
       </span>
     );
   });

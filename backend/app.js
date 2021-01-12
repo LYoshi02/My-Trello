@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 
 const boardRoutes = require("./routes/board");
 const cardRoutes = require("./routes/card");
+const tagRoutes = require("./routes/tag");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(bodyParser.json());
 
 app.use(boardRoutes);
 app.use(cardRoutes);
+app.use(tagRoutes);
 
 mongoose
   .connect(
@@ -27,6 +29,8 @@ mongoose
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
     }
   )
   .then((res) => {

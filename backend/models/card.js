@@ -29,6 +29,17 @@ const cardSchema = new Schema({
       ],
     },
   ],
+  boardId: {
+    type: Schema.Types.ObjectId,
+    ref: "Board",
+    required: true,
+  },
+  selectedTags: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Tag",
+    },
+  ],
 });
 
 module.exports = model("Card", cardSchema);

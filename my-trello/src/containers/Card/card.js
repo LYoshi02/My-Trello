@@ -20,7 +20,6 @@ const Card = (props) => {
       .get(`card/${cardId}`)
       .then((res) => {
         setCardData(res.data.card);
-        console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -69,10 +68,9 @@ const Card = (props) => {
           updateChecklists={saveInput}
         />
         <Tag
-          fetchedTags={cardData.tags}
+          boardId={cardData.boardId}
           isModalOpen={activeModal === "tag"}
           closeModal={() => changeActiveModal(null)}
-          updateTags={saveInput}
         />
       </div>
     );

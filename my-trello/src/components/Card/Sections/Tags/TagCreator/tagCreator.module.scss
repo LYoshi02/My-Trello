@@ -47,3 +47,8 @@
         color: $clr-light;
     }
 }
+
+.ActionButtons {
+    display: flex;
+    justify-content: space-between;
+}

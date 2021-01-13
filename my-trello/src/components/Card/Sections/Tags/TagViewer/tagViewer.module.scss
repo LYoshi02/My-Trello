@@ -1,0 +1,50 @@
+@import "../../../../../styles/variables";
+
+.TagViewer {
+    padding-left: 4rem;
+
+    h3 {
+        font-size: 1.6rem;
+    }
+}
+
+.Tags {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -1rem;
+
+    span {
+        height: 4rem;
+        border-radius: $border-radius;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1 1 auto;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    span:hover {
+        cursor: pointer;
+    }
+}
+
+.TagElement { 
+    min-width: 4rem;
+    color: $clr-light;
+    font-weight: bold;
+    font-size: 1.8rem;
+    padding: 0 1rem;
+}
+
+.AddTag {
+    background-color: #eaecf0;
+    min-width: 4rem;
+    max-width: 4rem;
+
+    svg {
+        font-size: 2.2rem;
+        color: #4b5a76;
+    }
+}

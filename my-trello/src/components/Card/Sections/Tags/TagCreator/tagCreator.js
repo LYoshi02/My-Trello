@@ -32,6 +32,7 @@ const TagCreator = ({
   changeCardName,
   changeCardColor,
   tagAction,
+  onDeleteTag,
 }) => {
   const colorElements = tagColors.map((clr) => {
     const clrClass = `tag-${clr}`;
@@ -65,10 +66,15 @@ const TagCreator = ({
         <div className={classes.Colors}>{colorElements}</div>
       </div>
 
-      <div>
+      <div className={classes.ActionButtons}>
         <Button type="button" clicked={tagAction}>
           {creating ? "Crear" : "Editar"}
         </Button>
+        {!creating && (
+          <Button type="button" clicked={onDeleteTag}>
+            Eliminar
+          </Button>
+        )}
       </div>
     </CardModal>
   );

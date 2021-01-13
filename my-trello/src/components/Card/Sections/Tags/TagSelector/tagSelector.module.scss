@@ -14,15 +14,20 @@
     }
 
     span {
-        display: inline-block;
+        display: flex;
+        justify-content: space-between;
         flex: 1;
         color: $clr-light;
         font-weight: bold;
         font-size: 1.4rem;
-        // background-color: red;
         padding: .75rem;
         border-radius: $border-radius;
         text-transform: capitalize;
+    }
+
+    span svg {
+        font-size: 1.6rem;
+        margin-left: 0;
     }
 
     span:hover,

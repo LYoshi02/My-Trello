@@ -4,10 +4,7 @@ exports.getCard = async (req, res, next) => {
   const cardId = req.params.cardId;
 
   try {
-    const card = await (await Card.findById(cardId))
-      .populate("checklists")
-      .execPopulate();
-
+    const card = await Card.findById(cardId).populate("checklists").exec();
     if (!card) {
       throw new Error("Card not found");
     }

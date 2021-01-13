@@ -1,19 +1,28 @@
 import React from "react";
-import { IoCreateOutline } from "react-icons/io5";
+import { IoCreateOutline, IoCheckmarkSharp } from "react-icons/io5";
 import Button from "../../../../UI/Button/button";
 import CardModal from "../../../Modal/modal";
 
 import classes from "./tagSelector.module.scss";
 
-const TagSelector = ({ tags, setTagCreator, setTagEditor, closeModal }) => {
+const TagSelector = ({
+  tags,
+  selectedTags,
+  setTagCreator,
+  setTagEditor,
+  closeModal,
+  onSelectTag,
+}) => {
   let tagElements = null;
   if (tags) {
     tagElements = tags.map((tag) => {
       const clrClass = `tag-${tag.color}`;
-
       return (
         <li key={tag._id} className={classes.Tag}>
-          <span className={clrClass}>{tag.name}&nbsp;</span>
+          <span className={clrClass} onClick={() => onSelectTag(tag._id)}>
+            {tag.name}&nbsp;
+            {selectedTags.includes(tag._id.toString()) && <IoCheckmarkSharp />}
+          </span>
           <IoCreateOutline onClick={() => setTagEditor(tag._id)} />
         </li>
       );

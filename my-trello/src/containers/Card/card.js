@@ -19,6 +19,7 @@ const Card = (props) => {
     axios
       .get(`card/${cardId}`)
       .then((res) => {
+        console.log(res);
         setCardData(res.data.card);
       })
       .catch((err) => {
@@ -46,6 +47,16 @@ const Card = (props) => {
     }
   };
 
+  const updateSelectedTagsHandler = (tagId) => {
+    const updatedTags = cardData.selectedTags.filter(
+      (id) => id.toString() !== tagId
+    );
+    const updatedCard = updateObject(cardData, {
+      selectedTags: updatedTags,
+    });
+    setCardData(updatedCard);
+  };
+
   const changeActiveModal = (activeModal) => {
     setActiveModal(activeModal);
   };
@@ -57,6 +68,15 @@ const Card = (props) => {
 
     mainCardContent = (
       <div className={classes.MainContent}>
+        <Tag
+          boardId={cardData.boardId}
+          selectedTags={cardData.selectedTags}
+          isModalOpen={activeModal === "tag"}
+          openModal={changeActiveModal}
+          closeModal={() => changeActiveModal(null)}
+          onSaveSelectedTag={saveInput}
+          onUpdateSelectedTags={updateSelectedTagsHandler}
+        />
         <Description
           description={cardData.description}
           inputSaveDescription={saveInput}
@@ -66,11 +86,6 @@ const Card = (props) => {
           isModalOpen={activeModal === "checklist"}
           fetchedChecklists={cardData.checklists}
           updateChecklists={saveInput}
-        />
-        <Tag
-          boardId={cardData.boardId}
-          isModalOpen={activeModal === "tag"}
-          closeModal={() => changeActiveModal(null)}
         />
       </div>
     );

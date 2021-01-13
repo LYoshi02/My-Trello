@@ -10,4 +10,6 @@ router.post("/board/:boardId/tags", tagController.createTag);
 
 router.patch("/board/:boardId/tags/:tagId", tagController.updateTag);
 
+router.delete("/board/:boardId/tags/:tagId", tagController.deleteTag);
+
 module.exports = router;

@@ -20,24 +20,22 @@ exports.createBoard = async (req, res, next) => {
     { name: "En Proceso", position: 2 },
     { name: "Finalizado", position: 3 },
   ];
-  const defaultTags = [
-    { name: "", color: "green" },
-    { name: "", color: "yellow" },
-    { name: "", color: "orange" },
-    { name: "", color: "red" },
-    { name: "", color: "purple" },
-    { name: "", color: "blue" },
-  ];
 
   const board = new Board({ name: name });
-  const tags = new Tag({ tags: defaultTags, boardId: board });
   const list = new List({ lists: defaultLists, boardId: board });
-  board.tags = tags;
+
+  const defaultTags = [
+    { name: "", color: "green", boardId: board._id.toString() },
+    { name: "", color: "yellow", boardId: board._id.toString() },
+    { name: "", color: "red", boardId: board._id.toString() },
+    { name: "", color: "blue", boardId: board._id.toString() },
+  ];
 
   try {
+    const tags = await Tag.insertMany(defaultTags);
+    board.tags = tags;
     await board.save();
     await list.save();
-    await tags.save();
 
     res
       .status(201)
@@ -55,7 +53,12 @@ exports.getBoard = async (req, res, next) => {
     const boardLists = await List.findOne({ boardId: boardId })
       .populate({
         path: "lists",
-        populate: { path: "cardIds" },
+        populate: {
+          path: "cardIds",
+          populate: {
+            path: "selectedTags",
+          },
+        },
       })
       .exec();
 

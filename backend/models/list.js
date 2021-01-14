@@ -6,6 +6,7 @@ const listSchema = new Schema({
       name: {
         type: String,
         required: true,
+        trim: true,
       },
       position: {
         type: Number,

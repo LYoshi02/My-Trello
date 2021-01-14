@@ -32,14 +32,15 @@ const Card = (props) => {
       const updatedCard = updateObject(cardData, {
         [inputName]: inputValue,
       });
-      console.log(updatedCard);
+      setCardData(updatedCard);
+
       axios
         .put(`/card/${cardData._id}`, {
           card: updatedCard,
         })
         .then((res) => {
+          // TODO: hallar forma de hacer esto sin tener que esperar a la response
           console.log(res);
-          setCardData(res.data.card);
         })
         .catch((err) => {
           console.log(err);
@@ -47,9 +48,23 @@ const Card = (props) => {
     }
   };
 
-  const updateSelectedTagsHandler = (tagId) => {
+  const updateSelectedTagsHandler = (editedTag) => {
+    const updatedSelectedTags = cardData.selectedTags.map((st) => {
+      if (st._id.toString() === editedTag._id.toString()) {
+        return editedTag;
+      }
+
+      return st;
+    });
+    const updatedCardData = updateObject(cardData, {
+      selectedTags: updatedSelectedTags,
+    });
+    setCardData(updatedCardData);
+  };
+
+  const deleteSelectedTagsHandler = (tagId) => {
     const updatedTags = cardData.selectedTags.filter(
-      (id) => id.toString() !== tagId
+      (st) => st._id.toString() !== tagId
     );
     const updatedCard = updateObject(cardData, {
       selectedTags: updatedTags,
@@ -75,6 +90,7 @@ const Card = (props) => {
           openModal={changeActiveModal}
           closeModal={() => changeActiveModal(null)}
           onSaveSelectedTag={saveInput}
+          onDeleteSelectedTags={deleteSelectedTagsHandler}
           onUpdateSelectedTags={updateSelectedTagsHandler}
         />
         <Description

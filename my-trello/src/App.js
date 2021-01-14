@@ -12,6 +12,7 @@ import Boards from "./containers/Boards/boards";
 import Card from "./containers/Card/card";
 
 import "./App.scss";
+import "./styles/tag-colors.scss";
 
 function App() {
   return (

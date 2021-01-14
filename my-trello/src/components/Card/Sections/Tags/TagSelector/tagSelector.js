@@ -21,7 +21,9 @@ const TagSelector = ({
         <li key={tag._id} className={classes.Tag}>
           <span className={clrClass} onClick={() => onSelectTag(tag._id)}>
             {tag.name}&nbsp;
-            {selectedTags.includes(tag._id.toString()) && <IoCheckmarkSharp />}
+            {selectedTags.some(
+              (st) => st._id.toString() === tag._id.toString()
+            ) && <IoCheckmarkSharp />}
           </span>
           <IoCreateOutline onClick={() => setTagEditor(tag._id)} />
         </li>

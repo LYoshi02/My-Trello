@@ -5,8 +5,6 @@ import TagCreator from "../../../components/Card/Sections/Tags/TagCreator/tagCre
 import TagModal from "../../../components/Card/Sections/Tags/TagSelector/tagSelector";
 import TagViewer from "../../../components/Card/Sections/Tags/TagViewer/tagViewer";
 
-import "../../../styles/tag-colors.scss";
-
 const Tag = ({
   boardId,
   selectedTags,
@@ -14,6 +12,7 @@ const Tag = ({
   closeModal,
   openModal,
   onSaveSelectedTag,
+  onDeleteSelectedTags,
   onUpdateSelectedTags,
 }) => {
   const [creating, setCreating] = useState(false);
@@ -76,16 +75,21 @@ const Tag = ({
   };
 
   const selectTagHandler = (tagId) => {
-    const isTagSelected = selectedTags.includes(tagId);
+    const isTagSelected = selectedTags.some(
+      (st) => st._id.toString() === tagId
+    );
     let updatedSelectedTags;
 
     if (isTagSelected) {
-      updatedSelectedTags = selectedTags.filter((id) => id !== tagId);
+      updatedSelectedTags = selectedTags.filter(
+        (st) => st._id.toString() !== tagId
+      );
     } else {
       updatedSelectedTags = [...selectedTags];
       const selectedTag = tags.find((tag) => tag._id.toString() === tagId);
       updatedSelectedTags.push(selectedTag);
     }
+
     onSaveSelectedTag("selectedTags", updatedSelectedTags);
   };
 
@@ -100,10 +104,20 @@ const Tag = ({
 
     axios({ url, method, data: newTag })
       .then((res) => {
+        if (creating) {
+          setTags((prevState) => [...prevState, res.data.tag]);
+        } else {
+          const updatedTagIndex = tags.findIndex(
+            (tag) => tag._id.toString() === editingId
+          );
+          const updatedTags = [...tags];
+          updatedTags.splice(updatedTagIndex, 1, res.data.tag);
+          setTags(updatedTags);
+          onUpdateSelectedTags(res.data.tag);
+        }
         closeCreatorModal();
         setCreateCardName("");
         setCreateCardColor("");
-        setTags(res.data.tags);
       })
       .catch((err) => {
         console.log(err);
@@ -114,8 +128,10 @@ const Tag = ({
     axios
       .delete(`/board/${boardId}/tags/${editingId}`)
       .then((res) => {
-        onUpdateSelectedTags(editingId);
-        setTags(res.data.tags);
+        onDeleteSelectedTags(res.data.deletedId);
+        setTags((prevState) =>
+          prevState.filter((tag) => tag._id.toString() !== res.data.deletedId)
+        );
         closeCreatorModal();
       })
       .catch((err) => {
@@ -154,11 +170,7 @@ const Tag = ({
   let tagViewerElement;
   if (selectedTags.length > 0 && tags.length > 0) {
     tagViewerElement = (
-      <TagViewer
-        tags={tags}
-        selectedTags={selectedTags}
-        openModal={openMainModal}
-      />
+      <TagViewer selectedTags={selectedTags} openModal={openMainModal} />
     );
   }
 

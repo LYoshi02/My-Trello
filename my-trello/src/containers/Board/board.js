@@ -4,7 +4,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 
 import List from "../../components/Board/List/list";
 import NewList from "../../components/Board/NewList/newList";
-import { copyUserListsArray } from "../../util/board";
+import { copyUserListsArray, isMovementEqual } from "../../util/board";
 
 import classes from "./board.module.scss";
 
@@ -30,60 +30,62 @@ const Board = (props) => {
   }, [boardId]);
 
   const dragEndHandler = (result) => {
-    if (!result.destination) return;
+    if (!result.destination || !result.source) return;
 
-    const startIndex = userLists.lists.findIndex(
-      (list) => list._id.toString() === result.source.droppableId
-    );
-    const finishIndex = userLists.lists.findIndex(
-      (list) => list._id.toString() === result.destination.droppableId
-    );
-    const draggedItem = userLists.lists[startIndex].cardIds.find(
-      (card) => card._id.toString() === result.draggableId
-    );
-    let updatedList;
+    if (!isMovementEqual(result)) {
+      console.log(result);
+      const startIndex = userLists.lists.findIndex(
+        (list) => list._id.toString() === result.source.droppableId
+      );
+      const finishIndex = userLists.lists.findIndex(
+        (list) => list._id.toString() === result.destination.droppableId
+      );
+      const draggedItem = userLists.lists[startIndex].cardIds.find(
+        (card) => card._id.toString() === result.draggableId
+      );
+      let updatedList;
 
-    if (startIndex !== -1 && startIndex === finishIndex) {
-      const newCardIds = Array.from(userLists.lists[startIndex].cardIds);
-      newCardIds.splice(result.source.index, 1);
-      newCardIds.splice(result.destination.index, 0, draggedItem);
-      const newColumn = {
-        ...userLists.lists[startIndex],
-        cardIds: [...newCardIds],
-      };
-      updatedList = {
-        ...userLists,
-        lists: [...userLists.lists],
-      };
-      updatedList.lists[startIndex] = newColumn;
-    } else {
-      const startCardIds = Array.from(userLists.lists[startIndex].cardIds);
-      startCardIds.splice(result.source.index, 1);
+      if (startIndex === finishIndex) {
+        const newCardIds = Array.from(userLists.lists[startIndex].cardIds);
+        newCardIds.splice(result.source.index, 1);
+        newCardIds.splice(result.destination.index, 0, draggedItem);
+        const newColumn = {
+          ...userLists.lists[startIndex],
+          cardIds: [...newCardIds],
+        };
+        updatedList = {
+          ...userLists,
+          lists: [...userLists.lists],
+        };
+        updatedList.lists[startIndex] = newColumn;
+      } else {
+        const startCardIds = Array.from(userLists.lists[startIndex].cardIds);
+        startCardIds.splice(result.source.index, 1);
 
-      const newStartColumn = {
-        ...userLists.lists[startIndex],
-        cardIds: [...startCardIds],
-      };
+        const newStartColumn = {
+          ...userLists.lists[startIndex],
+          cardIds: [...startCardIds],
+        };
 
-      const finishCardIds = Array.from(userLists.lists[finishIndex].cardIds);
-      finishCardIds.splice(result.destination.index, 0, draggedItem);
+        const finishCardIds = Array.from(userLists.lists[finishIndex].cardIds);
+        finishCardIds.splice(result.destination.index, 0, draggedItem);
 
-      const newFinishColumn = {
-        ...userLists.lists[finishIndex],
-        cardIds: [...finishCardIds],
-      };
+        const newFinishColumn = {
+          ...userLists.lists[finishIndex],
+          cardIds: [...finishCardIds],
+        };
 
-      updatedList = {
-        ...userLists,
-        columns: {
-          ...userLists.columns,
-        },
-      };
-      updatedList.lists[startIndex] = newStartColumn;
-      updatedList.lists[finishIndex] = newFinishColumn;
+        updatedList = {
+          ...userLists,
+          columns: {
+            ...userLists.columns,
+          },
+        };
+        updatedList.lists[startIndex] = newStartColumn;
+        updatedList.lists[finishIndex] = newFinishColumn;
+      }
+      updateUserLists(updatedList);
     }
-
-    updateUserLists(updatedList);
   };
 
   const updateUserLists = (userLists) => {

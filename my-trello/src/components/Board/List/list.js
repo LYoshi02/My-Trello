@@ -7,6 +7,7 @@ import ActionButtons from "../../UI/ActionButtons/actionButtons";
 import TransparentInput from "../../UI/TransparentInput/transparentInput";
 
 import classes from "./list.module.scss";
+import CardPreview from "../CardPreview/cardPreview";
 
 const List = (props) => {
   const {
@@ -30,15 +31,11 @@ const List = (props) => {
     listCards = listData.cardIds.map((card, index) => (
       <Draggable key={card._id} draggableId={card._id} index={index}>
         {(provided) => (
-          <div
-            className={classes.Card}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            onClick={() => openCard(card._id)}
-            ref={provided.innerRef}
-          >
-            <p>{card.name}</p>
-          </div>
+          <CardPreview
+            provided={provided}
+            onOpenCard={() => openCard(card._id)}
+            cardData={card}
+          />
         )}
       </Draggable>
     ));

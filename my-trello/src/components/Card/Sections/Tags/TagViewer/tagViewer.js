@@ -3,17 +3,16 @@ import { IoAddSharp } from "react-icons/io5";
 
 import classes from "./tagViewer.module.scss";
 
-const TagViewer = ({ tags, selectedTags, openModal }) => {
+const TagViewer = ({ selectedTags, openModal }) => {
   let tagElements = selectedTags.map((st) => {
-    const tagData = tags.find((tag) => tag._id.toString() === st);
-    const clrClass = `tag-${tagData.color}`;
+    const clrClass = `tag-${st.color}`;
     return (
       <span
-        key={st}
+        key={st._id}
         className={`${clrClass} ${classes.TagElement}`}
         onClick={openModal}
       >
-        {tagData.name}
+        {st.name}
       </span>
     );
   });

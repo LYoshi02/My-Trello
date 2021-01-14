@@ -5,8 +5,8 @@ exports.getTags = async (req, res, next) => {
   const boardId = req.params.boardId;
 
   try {
-    const tagGroup = await Tag.findOne({ boardId });
-    res.status(200).json({ tags: tagGroup.tags });
+    const tagGroup = await Tag.find({ boardId });
+    res.status(200).json({ tags: tagGroup });
   } catch (err) {
     console.log(err);
   }
@@ -14,14 +14,13 @@ exports.getTags = async (req, res, next) => {
 
 exports.createTag = async (req, res, next) => {
   const boardId = req.params.boardId;
-  const newTag = req.body;
+  const tagBody = req.body;
 
   try {
-    const tagGroup = await Tag.findOne({ boardId });
-    tagGroup.tags.push(newTag);
-    await tagGroup.save();
+    const newTag = new Tag({ ...tagBody, boardId: boardId });
+    const result = await newTag.save();
 
-    res.status(201).json({ tags: tagGroup.tags });
+    res.status(201).json({ tag: result });
   } catch (err) {
     console.log(err);
   }
@@ -33,12 +32,17 @@ exports.updateTag = async (req, res, next) => {
   const updatedTag = req.body;
 
   try {
-    const updatedTags = await Tag.findOneAndUpdate(
-      { boardId, "tags._id": tagId },
-      { "tags.$.name": updatedTag.name, "tags.$.color": updatedTag.color },
-      { new: true }
-    );
-    res.status(200).json({ tags: updatedTags.tags });
+    let tag = await Tag.findOne({ _id: tagId, boardId });
+
+    if (!tag) {
+      throw new Error("Tag not found");
+    }
+
+    tag = await Tag.findOneAndUpdate({ _id: tagId, boardId }, updatedTag, {
+      new: true,
+    });
+
+    res.status(200).json({ tag: tag });
   } catch (err) {
     console.log(err);
   }
@@ -49,21 +53,20 @@ exports.deleteTag = async (req, res, next) => {
   const tagId = req.params.tagId;
 
   try {
-    const tag = await Tag.findOne({ boardId: boardId, "tags._id": tagId });
+    const tag = await Tag.findOne({ boardId, _id: tagId });
 
     if (!tag) {
       throw new Error("Tag not found");
     }
-
-    tag.tags.pull(tagId);
-    const result = await tag.save();
 
     await Card.updateMany(
       { selectedTags: tagId },
       { $pull: { selectedTags: tagId } }
     );
 
-    res.status(200).json({ tags: result.tags });
+    const result = await Tag.findOneAndDelete({ boardId, _id: tagId });
+
+    res.status(200).json({ deletedId: result._id });
   } catch (err) {
     console.log(err);
   }

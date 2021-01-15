@@ -3,14 +3,15 @@ import { useHistory } from "react-router-dom";
 import axios from "../../axios-instance";
 
 import Actions from "../../components/Card/Actions/actions";
+import Attachment from "./Attachment/attachment";
 import Checklist from "./Checklist/checklist";
 import Delete from "../../components/Card/Delete/delete";
 import Description from "./Description/description";
 import Name from "./Name/name";
+import Tag from "./Tag/tag";
 import { updateObject } from "../../util/helpers";
 
 import classes from "./card.module.scss";
-import Tag from "./Tag/tag";
 
 const Card = (props) => {
   const [cardData, setCardData] = useState(null);
@@ -86,6 +87,21 @@ const Card = (props) => {
     setCardData(updatedCard);
   };
 
+  const uploadFileHandler = (fileData) => {
+    for (var [key, value] of fileData.entries()) {
+      console.log(key, value);
+    }
+
+    axios
+      .post(`card/${cardId}/upload`, fileData)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const changeActiveModal = (activeModal) => {
     setActiveModal(activeModal);
   };
@@ -114,6 +130,13 @@ const Card = (props) => {
         <Description
           description={cardData.description}
           inputSaveDescription={saveInput}
+        />
+        <Attachment
+          isModalOpen={activeModal === "attachment"}
+          fetchedAttachments={cardData.attachments}
+          onCloseModal={closeModalHandler}
+          onSaveAttachment={saveInput}
+          onUploadFile={uploadFileHandler}
         />
         <Checklist
           closeModal={closeModalHandler}

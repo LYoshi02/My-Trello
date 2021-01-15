@@ -1,3 +1,5 @@
+const path = require("path");
+
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -18,6 +20,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(bodyParser.json());
+app.use("/uploaded", express.static(path.join(__dirname, "uploaded")));
 
 app.use(boardRoutes);
 app.use(cardRoutes);

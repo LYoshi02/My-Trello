@@ -1,5 +1,9 @@
 import React from "react";
-import { IoMenuOutline, IoCheckboxOutline } from "react-icons/io5";
+import {
+  IoMenuOutline,
+  IoCheckboxOutline,
+  IoAttachOutline,
+} from "react-icons/io5";
 
 import classes from "./cardPreview.module.scss";
 
@@ -47,11 +51,22 @@ const CardPreview = ({ provided, onOpenCard, cardData }) => {
     );
   }
 
+  let attachments = null;
+  if (cardData.attachments && cardData.attachments.length > 0) {
+    const totalItems = cardData.attachments.length;
+    attachments = (
+      <span>
+        <IoAttachOutline /> {totalItems}
+      </span>
+    );
+  }
+
   let cardFooter = null;
-  if (description || checklist) {
+  if (description || checklist || attachments) {
     cardFooter = (
       <div className={classes.CardFooter}>
         {description}
+        {attachments}
         {checklist}
       </div>
     );

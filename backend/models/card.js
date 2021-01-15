@@ -42,6 +42,25 @@ const cardSchema = new Schema({
       ref: "Tag",
     },
   ],
+  attachments: [
+    {
+      name: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      url: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      type: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    },
+  ],
 });
 
 module.exports = model("Card", cardSchema);

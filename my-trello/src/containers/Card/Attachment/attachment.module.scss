@@ -1,0 +1,49 @@
+@import "../../../styles/variables";
+
+.Thumbnail {
+    height: 8rem;
+    display: flex;
+    border-radius: $border-radius;
+    transition: $trn-short;
+    margin-bottom: 2rem;
+
+    &:hover {
+        background-color: #eaecf0;
+        cursor: pointer;
+    }
+
+    &:hover .ThumbnailType {
+        background-color: #e1e4ea;
+    }
+}
+
+.ThumbnailType {
+    background-color: #eaecf0;
+    color: #5e6c84;
+    width: 25%;
+    font-size: 2.5rem;
+    font-weight: bold;
+    transition: $trn-short;
+    text-transform: uppercase;
+
+    a:link,
+    a:visited {
+        display: inline-block;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+.ThumbnailContent {
+    width: 75%;
+    padding: 1rem;
+
+    p {
+        font-size: 1.4rem;
+        font-weight: bold;
+        word-break: break-all;
+    }
+}

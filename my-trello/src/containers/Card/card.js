@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import axios from "../../axios-instance";
 
 import Actions from "../../components/Card/Actions/actions";
 import Checklist from "./Checklist/checklist";
+import Delete from "../../components/Card/Delete/delete";
 import Description from "./Description/description";
 import Name from "./Name/name";
 import { updateObject } from "../../util/helpers";
@@ -13,6 +15,7 @@ import Tag from "./Tag/tag";
 const Card = (props) => {
   const [cardData, setCardData] = useState(null);
   const [activeModal, setActiveModal] = useState("");
+  let history = useHistory();
 
   const cardId = props.match.params.cardId;
   useEffect(() => {
@@ -48,6 +51,17 @@ const Card = (props) => {
     }
   };
 
+  const deleteCardHandler = () => {
+    axios
+      .delete(`card/${cardId}`)
+      .then((res) => {
+        history.replace(`/board/${res.data.card.boardId}`);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const updateSelectedTagsHandler = (editedTag) => {
     const updatedSelectedTags = cardData.selectedTags.map((st) => {
       if (st._id.toString() === editedTag._id.toString()) {
@@ -76,6 +90,10 @@ const Card = (props) => {
     setActiveModal(activeModal);
   };
 
+  const closeModalHandler = () => {
+    setActiveModal(null);
+  };
+
   let mainCardContent = null,
     nameCard = null;
   if (cardData) {
@@ -88,7 +106,7 @@ const Card = (props) => {
           selectedTags={cardData.selectedTags}
           isModalOpen={activeModal === "tag"}
           openModal={changeActiveModal}
-          closeModal={() => changeActiveModal(null)}
+          closeModal={closeModalHandler}
           onSaveSelectedTag={saveInput}
           onDeleteSelectedTags={deleteSelectedTagsHandler}
           onUpdateSelectedTags={updateSelectedTagsHandler}
@@ -98,10 +116,15 @@ const Card = (props) => {
           inputSaveDescription={saveInput}
         />
         <Checklist
-          closeModal={() => changeActiveModal(null)}
+          closeModal={closeModalHandler}
           isModalOpen={activeModal === "checklist"}
           fetchedChecklists={cardData.checklists}
           updateChecklists={saveInput}
+        />
+        <Delete
+          isModalOpen={activeModal === "delete"}
+          onCloseModal={closeModalHandler}
+          onDeleteCard={deleteCardHandler}
         />
       </div>
     );

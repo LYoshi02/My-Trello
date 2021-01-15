@@ -14,14 +14,18 @@ const actionItems = {
         name: "Etiquetas",
         modalType: "tag",
       },
+      {
+        name: "Adjunto",
+        modalType: "attachment",
+      },
     ],
   },
   cardActions: {
     title: "Acciones",
     items: [
       {
-        name: "Mover",
-        modalType: "move",
+        name: "Borrar",
+        modalType: "delete",
       },
     ],
   },

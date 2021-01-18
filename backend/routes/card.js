@@ -27,9 +27,14 @@ router.put("/card/:cardId", cardController.updateCard);
 router.delete("/card/:cardId", cardController.deleteCard);
 
 router.post(
-  "/card/:cardId/upload",
+  "/card/:cardId/attachment",
   upload.single("attachedFile"),
   cardController.createAttachment
+);
+
+router.delete(
+  "/card/:cardId/attachment/:attachmentId",
+  cardController.deleteAttachment
 );
 
 module.exports = router;

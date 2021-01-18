@@ -87,15 +87,25 @@ const Card = (props) => {
     setCardData(updatedCard);
   };
 
-  const uploadFileHandler = (fileData) => {
-    for (var [key, value] of fileData.entries()) {
-      console.log(key, value);
-    }
-
+  const createAttachmentHandler = (attachmentData) => {
     axios
-      .post(`card/${cardId}/upload`, fileData)
+      .post(`card/${cardId}/attachment`, attachmentData)
       .then((res) => {
         console.log(res);
+        setCardData(res.data.card);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const deleteAttachmentHandler = (attachmentId) => {
+    console.log(attachmentId);
+    axios
+      .delete(`card/${cardId}/attachment/${attachmentId}`)
+      .then((res) => {
+        console.log(res);
+        setCardData(res.data.card);
       })
       .catch((err) => {
         console.log(err);
@@ -135,8 +145,9 @@ const Card = (props) => {
           isModalOpen={activeModal === "attachment"}
           fetchedAttachments={cardData.attachments}
           onCloseModal={closeModalHandler}
-          onSaveAttachment={saveInput}
-          onUploadFile={uploadFileHandler}
+          onCreateAttachment={createAttachmentHandler}
+          onDeleteAttachment={deleteAttachmentHandler}
+          onEditAttachment={saveInput}
         />
         <Checklist
           closeModal={closeModalHandler}

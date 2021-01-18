@@ -1,91 +1,94 @@
 import React, { useState, useEffect } from "react";
 import { IoAttachOutline } from "react-icons/io5";
+
+import AttachmentComponent from "../../../components/Card/Sections/Attachments/Attachment/attachment";
+import AttachmentsModal from "../../../components/Card/Sections/Attachments/AttachmentsModal/attachmentsModal";
 import CardHeading from "../../../components/Card/Heading/heading";
-
-import CardModal from "../../../components/Card/Modal/modal";
-import Button from "../../../components/UI/Button/button";
-
-import classes from "./attachment.module.scss";
+import { updateObject } from "../../../util/helpers";
 
 const Attachment = ({
   isModalOpen,
   onCloseModal,
-  onSaveAttachment,
   fetchedAttachments,
-  onUploadFile,
+  onCreateAttachment,
+  onDeleteAttachment,
+  onEditAttachment,
 }) => {
-  const [attachments, setAttachments] = useState([]);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [linkName, setLinkName] = useState("");
-
-  useEffect(() => {
-    if (fetchedAttachments) {
-      setAttachments(fetchedAttachments);
-    }
-  }, [fetchedAttachments]);
+  const [linkData, setLinkData] = useState({
+    name: "",
+    url: "",
+  });
+  const [editingId, setEditingId] = useState(null);
 
   const submitFormHandler = (event) => {
     event.preventDefault();
-    const newAttachment = {
-      name: linkName,
-      url: linkUrl,
-      type: "link",
-    };
-    const updatedAttachments = [...attachments, newAttachment];
-    onSaveAttachment("attachments", updatedAttachments);
+    if (!editingId) {
+      const newAttachment = {
+        ...linkData,
+        type: "link",
+      };
+      onCreateAttachment(newAttachment);
+    } else {
+      const updatedAttachments = [...fetchedAttachments];
+      const changedAttachmentIndex = fetchedAttachments.findIndex(
+        (att) => att._id === editingId
+      );
+
+      if (
+        fetchedAttachments[changedAttachmentIndex].name !== linkData.name.trim()
+      ) {
+        const updatedAttachment = updateObject(
+          fetchedAttachments[changedAttachmentIndex],
+          { name: linkData.name }
+        );
+        updatedAttachments.splice(changedAttachmentIndex, 1, updatedAttachment);
+        onEditAttachment("attachments", updatedAttachments);
+      }
+    }
+
     closeModalHandler();
   };
 
-  const fileChangeHandler = (event) => {
+  const fileUploadHandler = (event) => {
     const data = new FormData();
     data.append("attachedFile", event.target.files[0]);
-    onUploadFile(data);
+    onCreateAttachment(data);
   };
 
   const closeModalHandler = () => {
-    setLinkUrl("");
-    setLinkName("");
+    setLinkData({ name: "", url: "" });
+    setEditingId(null);
     onCloseModal();
   };
 
+  const openEditorModal = (id) => {
+    const { name, type } = fetchedAttachments.find(
+      (att) => att._id.toString() === id
+    );
+    setLinkData({ name, type });
+    setEditingId(id);
+  };
+
+  const linkInputChangedHandler = (value, type) => {
+    setLinkData((prevState) => {
+      return {
+        ...prevState,
+        [type]: value,
+      };
+    });
+  };
+
   let modal = null;
-  if (isModalOpen) {
+  if (isModalOpen || editingId) {
     modal = (
-      <CardModal close={closeModalHandler}>
-        <h2>Adjuntar a partir de...</h2>
-
-        <form onSubmit={submitFormHandler}>
-          <div>
-            <input
-              type="file"
-              name="attachedFile"
-              onChange={fileChangeHandler}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="link">Adjuntar un enlace:</label>
-            <input
-              type="url"
-              id="link"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="link-name">Nombre del enlace (opcional):</label>
-            <input
-              type="text"
-              id="link-name"
-              value={linkName}
-              onChange={(e) => setLinkName(e.target.value)}
-            />
-          </div>
-
-          <Button type="submit">Adjuntar</Button>
-        </form>
-      </CardModal>
+      <AttachmentsModal
+        inputData={linkData}
+        isEditing={editingId !== null}
+        onClose={closeModalHandler}
+        onSubmitForm={submitFormHandler}
+        onFileUpload={fileUploadHandler}
+        onInputChanged={linkInputChangedHandler}
+      />
     );
   }
 
@@ -99,26 +102,14 @@ const Attachment = ({
         </CardHeading>
 
         <div>
-          {fetchedAttachments.map((item) => {
-            let url = item.url;
-            if (item.type !== "link") {
-              url = "http://localhost:8080" + item.url;
-            }
-
-            return (
-              <div className={classes.Thumbnail} key={item._id}>
-                <div className={classes.ThumbnailType}>
-                  <a href={url} target="_blank" rel="noreferrer">
-                    {item.type}
-                  </a>
-                </div>
-
-                <div className={classes.ThumbnailContent}>
-                  <p>{item.name || item.url}</p>
-                </div>
-              </div>
-            );
-          })}
+          {fetchedAttachments.map((item) => (
+            <AttachmentComponent
+              key={item._id}
+              data={item}
+              onDelete={onDeleteAttachment}
+              onEdit={openEditorModal}
+            />
+          ))}
         </div>
       </div>
     );

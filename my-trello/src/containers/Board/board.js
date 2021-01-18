@@ -16,10 +16,13 @@ const Board = (props) => {
   const [listName, setListName] = useState("");
 
   const { boardId } = props.match.params;
-
+  const { token } = props;
   useEffect(() => {
+    console.log("Hello");
     axios
-      .get(`board/${boardId}`)
+      .get(`board/${boardId}`, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         console.log(res);
         setUserLists(res.data.boardData.lists);
@@ -27,7 +30,7 @@ const Board = (props) => {
       .catch((err) => {
         console.log(err);
       });
-  }, [boardId]);
+  }, [boardId, token]);
 
   const dragEndHandler = (result) => {
     if (!result.destination || !result.source) return;
@@ -92,9 +95,13 @@ const Board = (props) => {
     setUserLists(userLists);
 
     axios
-      .patch(`board/list/${userLists._id}`, {
-        updatedLists: userLists.lists,
-      })
+      .patch(
+        `board/list/${userLists._id}`,
+        {
+          updatedLists: userLists.lists,
+        },
+        { headers: { Authorization: "Bearer " + token } }
+      )
       .then((res) => {
         // TODO: hallar forma de hacer esto sin tener que esperar a la response
         console.log(res);
@@ -116,11 +123,15 @@ const Board = (props) => {
 
   const createCardHandler = () => {
     axios
-      .post(`board/list/${userLists._id}`, {
-        name: cardName,
-        listChangedId: columnCreateCard,
-        boardId: boardId,
-      })
+      .post(
+        `board/list/${userLists._id}`,
+        {
+          name: cardName,
+          listChangedId: columnCreateCard,
+          boardId: boardId,
+        },
+        { headers: { Authorization: "Bearer " + token } }
+      )
       .then((res) => {
         const updatedUserLists = copyUserListsArray(userLists);
         updatedUserLists.lists.forEach((list) => {
@@ -141,9 +152,13 @@ const Board = (props) => {
     event.preventDefault();
 
     axios
-      .post(`board/${boardId}`, {
-        name: listName,
-      })
+      .post(
+        `board/${boardId}`,
+        {
+          name: listName,
+        },
+        { headers: { Authorization: "Bearer " + token } }
+      )
       .then((res) => {
         const updatedUserLists = copyUserListsArray(userLists);
         updatedUserLists.lists.push(res.data.list);
@@ -168,9 +183,13 @@ const Board = (props) => {
       updatedUserLists.lists[listChangedIndex].name = updatedListName;
 
       axios
-        .patch(`board/list/${userLists._id}`, {
-          updatedLists: updatedUserLists.lists,
-        })
+        .patch(
+          `board/list/${userLists._id}`,
+          {
+            updatedLists: updatedUserLists.lists,
+          },
+          { headers: { Authorization: "Bearer " + token } }
+        )
         .then((res) => {
           setUserLists(updatedUserLists);
           console.log(res);

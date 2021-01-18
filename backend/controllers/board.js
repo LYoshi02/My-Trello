@@ -4,8 +4,9 @@ const Card = require("../models/card");
 const Tag = require("../models/tag");
 
 exports.getBoards = async (req, res, next) => {
+  const userId = req.userId;
   try {
-    const boards = await Board.find().select("name");
+    const boards = await Board.find({ creator: userId }).select("name");
 
     res.status(200).json({ boards: boards });
   } catch (err) {
@@ -15,13 +16,15 @@ exports.getBoards = async (req, res, next) => {
 
 exports.createBoard = async (req, res, next) => {
   const name = req.body.name;
+  const userId = req.userId;
+
   const defaultLists = [
     { name: "Lista de Tareas", position: 1 },
     { name: "En Proceso", position: 2 },
     { name: "Finalizado", position: 3 },
   ];
 
-  const board = new Board({ name: name });
+  const board = new Board({ name: name, creator: userId });
   const list = new List({ lists: defaultLists, boardId: board });
 
   const defaultTags = [
@@ -47,9 +50,15 @@ exports.createBoard = async (req, res, next) => {
 
 exports.getBoard = async (req, res, next) => {
   const boardId = req.params.boardId;
+  const userId = req.userId;
 
   try {
     const board = await Board.findById(boardId);
+
+    if (board.creator.toString() !== userId) {
+      throw new Error("Not authorized");
+    }
+
     const boardLists = await List.findOne({ boardId: boardId })
       .populate({
         path: "lists",

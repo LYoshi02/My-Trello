@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { IoAttachOutline } from "react-icons/io5";
 
 import AttachmentComponent from "../../../components/Card/Sections/Attachments/Attachment/attachment";

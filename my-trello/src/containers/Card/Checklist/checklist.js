@@ -29,6 +29,7 @@ const Checklist = (props) => {
     const newChecklist = { title: titleInput, items: [] };
     const updatedChecklists = [...checklists, newChecklist];
     updateChecklists("checklists", updatedChecklists);
+    setTitleInput("");
     closeModal();
   };
 
@@ -105,26 +106,35 @@ const Checklist = (props) => {
       (item) => item._id === itemId
     );
 
-    const updatedItem = updateObject(
-      checklists[checklistChangedIndex].items[itemChangedIndex],
-      {
-        name: itemName,
-      }
-    );
-    const updatedItems = [...checklists[checklistChangedIndex].items];
-    updatedItems.splice(itemChangedIndex, 1, updatedItem);
+    if (
+      checklists[checklistChangedIndex].items[itemChangedIndex].name !==
+      itemName.trim()
+    ) {
+      const updatedItem = updateObject(
+        checklists[checklistChangedIndex].items[itemChangedIndex],
+        {
+          name: itemName,
+        }
+      );
+      const updatedItems = [...checklists[checklistChangedIndex].items];
+      updatedItems.splice(itemChangedIndex, 1, updatedItem);
 
-    const singleChecklistUpdated = updateObject(
-      checklists[checklistChangedIndex],
-      {
-        items: [...updatedItems],
-      }
-    );
+      const singleChecklistUpdated = updateObject(
+        checklists[checklistChangedIndex],
+        {
+          items: [...updatedItems],
+        }
+      );
 
-    const updatedChecklists = [...checklists];
-    updatedChecklists.splice(checklistChangedIndex, 1, singleChecklistUpdated);
+      const updatedChecklists = [...checklists];
+      updatedChecklists.splice(
+        checklistChangedIndex,
+        1,
+        singleChecklistUpdated
+      );
 
-    updateChecklists("checklists", updatedChecklists);
+      updateChecklists("checklists", updatedChecklists);
+    }
   };
 
   const deleteChecklistHandler = (listId) => {

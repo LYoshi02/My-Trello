@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
+const authRoutes = require("./routes/auth");
 const boardRoutes = require("./routes/board");
 const cardRoutes = require("./routes/card");
 const tagRoutes = require("./routes/tag");
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 app.use("/uploaded", express.static(path.join(__dirname, "uploaded")));
 
+app.use(authRoutes);
 app.use(boardRoutes);
 app.use(cardRoutes);
 app.use(tagRoutes);

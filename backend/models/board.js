@@ -12,6 +12,11 @@ const boardSchema = new Schema({
       ref: "Tag",
     },
   ],
+  creator: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 module.exports = model("Board", boardSchema);

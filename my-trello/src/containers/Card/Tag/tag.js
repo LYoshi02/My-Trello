@@ -14,6 +14,7 @@ const Tag = ({
   onSaveSelectedTag,
   onDeleteSelectedTags,
   onUpdateSelectedTags,
+  token,
 }) => {
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -23,7 +24,9 @@ const Tag = ({
 
   useEffect(() => {
     axios
-      .get(`board/${boardId}/tags`)
+      .get(`board/${boardId}/tags`, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         console.log(res);
         setTags(res.data.tags);
@@ -31,7 +34,7 @@ const Tag = ({
       .catch((err) => {
         console.log(err);
       });
-  }, [boardId]);
+  }, [boardId, token]);
 
   const tagCreatorHandler = () => {
     setCreating(true);
@@ -102,7 +105,12 @@ const Tag = ({
       method = "PATCH";
     }
 
-    axios({ url, method, data: newTag })
+    axios({
+      url,
+      method,
+      data: newTag,
+      headers: { Authorization: "Bearer " + token },
+    })
       .then((res) => {
         if (creating) {
           setTags((prevState) => [...prevState, res.data.tag]);
@@ -126,7 +134,9 @@ const Tag = ({
 
   const deleteTagHandler = () => {
     axios
-      .delete(`/board/${boardId}/tags/${editingId}`)
+      .delete(`/board/${boardId}/tags/${editingId}`, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         onDeleteSelectedTags(res.data.deletedId);
         setTags((prevState) =>

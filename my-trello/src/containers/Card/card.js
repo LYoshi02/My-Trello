@@ -19,9 +19,12 @@ const Card = (props) => {
   let history = useHistory();
 
   const cardId = props.match.params.cardId;
+  const token = props.token;
   useEffect(() => {
     axios
-      .get(`card/${cardId}`)
+      .get(`card/${cardId}`, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         console.log(res);
         setCardData(res.data.card);
@@ -29,22 +32,27 @@ const Card = (props) => {
       .catch((err) => {
         console.log(err);
       });
-  }, [cardId]);
+  }, [cardId, token]);
 
   const saveInput = (inputName, inputValue) => {
     if (!cardData[inputName] || cardData[inputName] !== inputValue) {
       const updatedCard = updateObject(cardData, {
         [inputName]: inputValue,
       });
-      setCardData(updatedCard);
+      // TODO: hallar forma de hacer esto sin tener que esperar a la response para añadir multiples etiquetas
+      // setCardData(updatedCard);
 
       axios
-        .put(`/card/${cardData._id}`, {
-          card: updatedCard,
-        })
+        .put(
+          `/card/${cardData._id}`,
+          {
+            card: updatedCard,
+          },
+          { headers: { Authorization: "Bearer " + token } }
+        )
         .then((res) => {
-          // TODO: hallar forma de hacer esto sin tener que esperar a la response
           console.log(res);
+          setCardData(res.data.card);
         })
         .catch((err) => {
           console.log(err);
@@ -54,7 +62,9 @@ const Card = (props) => {
 
   const deleteCardHandler = () => {
     axios
-      .delete(`card/${cardId}`)
+      .delete(`card/${cardId}`, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         history.replace(`/board/${res.data.card.boardId}`);
       })
@@ -89,7 +99,9 @@ const Card = (props) => {
 
   const createAttachmentHandler = (attachmentData) => {
     axios
-      .post(`card/${cardId}/attachment`, attachmentData)
+      .post(`card/${cardId}/attachment`, attachmentData, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         console.log(res);
         setCardData(res.data.card);
@@ -102,7 +114,9 @@ const Card = (props) => {
   const deleteAttachmentHandler = (attachmentId) => {
     console.log(attachmentId);
     axios
-      .delete(`card/${cardId}/attachment/${attachmentId}`)
+      .delete(`card/${cardId}/attachment/${attachmentId}`, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         console.log(res);
         setCardData(res.data.card);
@@ -136,6 +150,7 @@ const Card = (props) => {
           onSaveSelectedTag={saveInput}
           onDeleteSelectedTags={deleteSelectedTagsHandler}
           onUpdateSelectedTags={updateSelectedTagsHandler}
+          token={token}
         />
         <Description
           description={cardData.description}

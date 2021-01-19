@@ -28,6 +28,14 @@ app.use(boardRoutes);
 app.use(cardRoutes);
 app.use(tagRoutes);
 
+app.use((error, req, res, next) => {
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+
+  res.status(status).json({ message: message, data: data });
+});
+
 mongoose
   .connect(
     "mongodb+srv://yoshi:kiNeAOg2V5oPvWxB@cluster0.z4xmb.mongodb.net/react-trello?retryWrites=true&w=majority",

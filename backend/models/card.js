@@ -36,6 +36,11 @@ const cardSchema = new Schema({
     ref: "Board",
     required: true,
   },
+  listId: {
+    type: Schema.Types.ObjectId,
+    ref: "List",
+    required: true,
+  },
   selectedTags: [
     {
       type: Schema.Types.ObjectId,

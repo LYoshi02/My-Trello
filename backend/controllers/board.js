@@ -1,7 +1,10 @@
+const { validationResult } = require("express-validator");
+
 const Board = require("../models/board");
 const List = require("../models/list");
 const Card = require("../models/card");
 const Tag = require("../models/tag");
+const { validateBoardCreator } = require("../util/board");
 
 exports.getBoards = async (req, res, next) => {
   const userId = req.userId;
@@ -10,41 +13,57 @@ exports.getBoards = async (req, res, next) => {
 
     res.status(200).json({ boards: boards });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
 
 exports.createBoard = async (req, res, next) => {
-  const name = req.body.name;
-  const userId = req.userId;
-
-  const defaultLists = [
-    { name: "Lista de Tareas", position: 1 },
-    { name: "En Proceso", position: 2 },
-    { name: "Finalizado", position: 3 },
-  ];
-
-  const board = new Board({ name: name, creator: userId });
-  const list = new List({ lists: defaultLists, boardId: board });
-
-  const defaultTags = [
-    { name: "", color: "green", boardId: board._id.toString() },
-    { name: "", color: "yellow", boardId: board._id.toString() },
-    { name: "", color: "red", boardId: board._id.toString() },
-    { name: "", color: "blue", boardId: board._id.toString() },
-  ];
+  const errors = validationResult(req);
 
   try {
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation failed");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const name = req.body.name;
+    const userId = req.userId;
+
+    const board = new Board({ name: name, creator: userId });
+
+    const defaultLists = [
+      { name: "Lista de Tareas", position: 1, cardIds: [] },
+      { name: "En Proceso", position: 2, cardIds: [] },
+      { name: "Finalizado", position: 3, cardIds: [] },
+    ];
+    for await (let list of defaultLists) {
+      const newList = new List({ ...list, boardId: board });
+      await newList.save();
+    }
+
+    const defaultTags = [
+      { name: "", color: "green", boardId: board._id.toString() },
+      { name: "", color: "yellow", boardId: board._id.toString() },
+      { name: "", color: "red", boardId: board._id.toString() },
+      { name: "", color: "blue", boardId: board._id.toString() },
+    ];
     const tags = await Tag.insertMany(defaultTags);
     board.tags = tags;
     await board.save();
-    await list.save();
 
     res
       .status(201)
       .json({ message: "Board created successfully", board: board });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
 
@@ -53,35 +72,52 @@ exports.getBoard = async (req, res, next) => {
   const userId = req.userId;
 
   try {
+    const boardValidationError = await validateBoardCreator(boardId, userId);
+    if (boardValidationError) {
+      throw boardValidationError;
+    }
     const board = await Board.findById(boardId);
 
-    if (board.creator.toString() !== userId) {
-      throw new Error("Not authorized");
-    }
-
-    const boardLists = await List.findOne({ boardId: boardId })
+    const boardLists = await List.find({ boardId: boardId })
       .populate({
-        path: "lists",
+        path: "cardIds",
         populate: {
-          path: "cardIds",
-          populate: {
-            path: "selectedTags",
-          },
+          path: "selectedTags",
         },
       })
+      .sort("position")
       .exec();
 
     res.status(200).json({ boardData: { board, lists: boardLists } });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
 
 exports.saveCard = async (req, res, next) => {
-  const userListId = req.params.listId;
+  const errors = validationResult(req);
 
   try {
-    const list = await List.findById(userListId);
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation failed");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const boardId = req.params.boardId;
+    const userId = req.userId;
+    const boardValidationError = await validateBoardCreator(boardId, userId);
+    if (boardValidationError) {
+      throw boardValidationError;
+    }
+    const board = await Board.findById(boardId);
+
+    const listId = req.params.listId;
+    const list = await List.findOne({ _id: listId, boardId });
 
     if (!list) {
       throw new Error("List not found");
@@ -89,70 +125,125 @@ exports.saveCard = async (req, res, next) => {
 
     const newCard = new Card({
       name: req.body.name,
-      boardId: req.body.boardId,
+      boardId: board._id,
+      listId: list._id,
     });
-    await newCard.save();
+    const result = await newCard.save();
 
-    const listChangedId = req.body.listChangedId;
-    const listChangedIndex = list.lists.findIndex(
-      (list) => list._id.toString() === listChangedId.toString()
-    );
-
-    if (listChangedIndex === -1) {
-      throw new Error("List index not found");
-    }
-
-    await list.lists[listChangedIndex].cardIds.push(newCard);
+    list.cardIds.push(result);
     await list.save();
 
-    res.status(201).json({ card: newCard });
+    res.status(201).json({ card: result });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
 
-exports.updateLists = async (req, res, next) => {
-  const listId = req.params.listId;
+exports.updateListName = async (req, res, next) => {
+  const errors = validationResult(req);
 
   try {
-    const userList = await List.findById(listId);
-    userList.lists = req.body.updatedLists;
-    await userList.save();
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation failed");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
 
-    res.status(200).json({ list: userList });
+    const boardId = req.params.boardId;
+    const userId = req.userId;
+    const boardValidationError = await validateBoardCreator(boardId, userId);
+    if (boardValidationError) {
+      throw boardValidationError;
+    }
+    const board = await Board.findById(boardId);
+
+    const listId = req.params.listId;
+    const newName = req.body.name;
+    const changedList = await List.findOne({ _id: listId, boardId });
+
+    if (!changedList) {
+      throw new Error("List not found");
+    }
+
+    changedList.name = newName;
+    const updatedList = await changedList.save();
+
+    res.status(200).json({ list: updatedList });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
 
 exports.createList = async (req, res, next) => {
-  const boardId = req.params.boardId;
-  const newName = req.body.name;
+  const errors = validationResult(req);
 
   try {
-    const boardLists = await List.findOne({ boardId: boardId });
-
-    if (!boardLists) {
-      throw new Error("Lists not found");
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation failed");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
     }
 
-    let newPosition;
-    if (boardLists.lists.length > 0) {
-      newPosition = boardLists.lists[boardLists.lists.length - 1].position + 1;
-    } else {
-      newPosition = 1;
+    const boardId = req.params.boardId;
+    const userId = req.userId;
+    const boardValidationError = await validateBoardCreator(boardId, userId);
+    if (boardValidationError) {
+      throw boardValidationError;
     }
 
-    const newList = { name: newName, position: newPosition, cardIds: [] };
-    boardLists.lists.push(newList);
-
-    await boardLists.save();
+    const newName = req.body.name;
+    const lastList = await List.findOne({ boardId }).sort("-position").exec();
+    const newPosition = lastList ? lastList.position + 1 : 1;
+    const newList = new List({
+      name: newName,
+      position: newPosition,
+      cardIds: [],
+      boardId: boardId,
+    });
+    await newList.save();
 
     res.status(201).json({
       message: "New list created successfully",
-      list: boardLists.lists[boardLists.lists.length - 1],
+      list: newList,
     });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.updateLists = async (req, res, next) => {
+  const boardId = req.params.boardId;
+  const userId = req.userId;
+
+  try {
+    const boardValidationError = await validateBoardCreator(boardId, userId);
+    if (boardValidationError) {
+      throw boardValidationError;
+    }
+
+    const updatedLists = req.body.updatedLists;
+    for await (let list of updatedLists) {
+      const updatedList = await List.findById(list._id);
+      updatedList.cardIds = list.cardIds;
+      await updatedList.save();
+    }
+
+    res.status(200).json({ message: "Lists updated successfully" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };

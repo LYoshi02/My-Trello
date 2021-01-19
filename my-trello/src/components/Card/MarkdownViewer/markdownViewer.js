@@ -11,7 +11,7 @@ const MarkdownViewer = (props) => {
       Añadir una descripción más detallada...
     </p>
   );
-  if (description) {
+  if (description.trim() !== "") {
     markdownElement = (
       <ReactMarkdown
         className={classes.Markdown}

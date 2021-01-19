@@ -1,23 +1,19 @@
 const { Schema, model } = require("mongoose");
 
 const listSchema = new Schema({
-  lists: [
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  position: {
+    type: Number,
+    required: true,
+  },
+  cardIds: [
     {
-      name: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-      position: {
-        type: Number,
-        required: true,
-      },
-      cardIds: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Card",
-        },
-      ],
+      type: Schema.Types.ObjectId,
+      ref: "Card",
     },
   ],
   boardId: {

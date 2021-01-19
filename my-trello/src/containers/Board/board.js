@@ -4,7 +4,8 @@ import { DragDropContext } from "react-beautiful-dnd";
 
 import List from "../../components/Board/List/list";
 import NewList from "../../components/Board/NewList/newList";
-import { copyUserListsArray, isMovementEqual } from "../../util/board";
+import { updateObject } from "../../util/helpers";
+import { isMovementEqual } from "../../util/board";
 
 import classes from "./board.module.scss";
 
@@ -18,7 +19,6 @@ const Board = (props) => {
   const { boardId } = props.match.params;
   const { token } = props;
   useEffect(() => {
-    console.log("Hello");
     axios
       .get(`board/${boardId}`, {
         headers: { Authorization: "Bearer " + token },
@@ -36,70 +36,56 @@ const Board = (props) => {
     if (!result.destination || !result.source) return;
 
     if (!isMovementEqual(result)) {
-      console.log(result);
-      const startIndex = userLists.lists.findIndex(
+      const startIndex = userLists.findIndex(
         (list) => list._id.toString() === result.source.droppableId
       );
-      const finishIndex = userLists.lists.findIndex(
+      const finishIndex = userLists.findIndex(
         (list) => list._id.toString() === result.destination.droppableId
       );
-      const draggedItem = userLists.lists[startIndex].cardIds.find(
+      const draggedItem = userLists[startIndex].cardIds.find(
         (card) => card._id.toString() === result.draggableId
       );
-      let updatedList;
+      const changedLists = [];
+      const updatedUserLists = [...userLists];
 
       if (startIndex === finishIndex) {
-        const newCardIds = Array.from(userLists.lists[startIndex].cardIds);
+        const newCardIds = [...userLists[startIndex].cardIds];
         newCardIds.splice(result.source.index, 1);
         newCardIds.splice(result.destination.index, 0, draggedItem);
-        const newColumn = {
-          ...userLists.lists[startIndex],
-          cardIds: [...newCardIds],
-        };
-        updatedList = {
-          ...userLists,
-          lists: [...userLists.lists],
-        };
-        updatedList.lists[startIndex] = newColumn;
+        const newColumn = updateObject(userLists[startIndex], {
+          cardIds: newCardIds,
+        });
+
+        changedLists.push(newColumn);
+        updatedUserLists.splice(startIndex, 1, newColumn);
       } else {
-        const startCardIds = Array.from(userLists.lists[startIndex].cardIds);
+        const startCardIds = [...userLists[startIndex].cardIds];
         startCardIds.splice(result.source.index, 1);
+        const newStartColumn = updateObject(userLists[startIndex], {
+          cardIds: startCardIds,
+        });
 
-        const newStartColumn = {
-          ...userLists.lists[startIndex],
-          cardIds: [...startCardIds],
-        };
-
-        const finishCardIds = Array.from(userLists.lists[finishIndex].cardIds);
+        const finishCardIds = [...userLists[finishIndex].cardIds];
         finishCardIds.splice(result.destination.index, 0, draggedItem);
+        const newFinishColumn = updateObject(userLists[finishIndex], {
+          cardIds: finishCardIds,
+        });
 
-        const newFinishColumn = {
-          ...userLists.lists[finishIndex],
-          cardIds: [...finishCardIds],
-        };
-
-        updatedList = {
-          ...userLists,
-          columns: {
-            ...userLists.columns,
-          },
-        };
-        updatedList.lists[startIndex] = newStartColumn;
-        updatedList.lists[finishIndex] = newFinishColumn;
+        changedLists.push(newStartColumn, newFinishColumn);
+        updatedUserLists.splice(startIndex, 1, newStartColumn);
+        updatedUserLists.splice(finishIndex, 1, newFinishColumn);
       }
-      updateUserLists(updatedList);
+
+      setUserLists(updatedUserLists);
+      updateUserLists(changedLists);
     }
   };
 
-  const updateUserLists = (userLists) => {
-    setUserLists(userLists);
-
+  const updateUserLists = (updatedLists) => {
     axios
       .patch(
-        `board/list/${userLists._id}`,
-        {
-          updatedLists: userLists.lists,
-        },
+        `board/${boardId}/list`,
+        { updatedLists },
         { headers: { Authorization: "Bearer " + token } }
       )
       .then((res) => {
@@ -121,26 +107,28 @@ const Board = (props) => {
     setCreatingList((prevState) => !prevState);
   };
 
-  const createCardHandler = () => {
+  const createCardHandler = (listId) => {
     axios
       .post(
-        `board/list/${userLists._id}`,
-        {
-          name: cardName,
-          listChangedId: columnCreateCard,
-          boardId: boardId,
-        },
+        `board/${boardId}/list/${listId}`,
+        { name: cardName },
         { headers: { Authorization: "Bearer " + token } }
       )
       .then((res) => {
-        const updatedUserLists = copyUserListsArray(userLists);
-        updatedUserLists.lists.forEach((list) => {
-          if (list._id.toString() === columnCreateCard.toString()) {
-            list.cardIds.push(res.data.card);
-          }
+        const updatedListIndex = userLists.findIndex(
+          (list) => list._id.toString() === listId
+        );
+        const updatedCards = [
+          ...userLists[updatedListIndex].cardIds,
+          res.data.card,
+        ];
+        const updatedList = updateObject(userLists[updatedListIndex], {
+          cardIds: updatedCards,
         });
+        const updatedLists = [...userLists];
+        updatedLists.splice(updatedListIndex, 1, updatedList);
 
-        setUserLists(updatedUserLists);
+        setUserLists(updatedLists);
         toggleCardCreator("");
       })
       .catch((err) => {
@@ -160,10 +148,7 @@ const Board = (props) => {
         { headers: { Authorization: "Bearer " + token } }
       )
       .then((res) => {
-        const updatedUserLists = copyUserListsArray(userLists);
-        updatedUserLists.lists.push(res.data.list);
-
-        setUserLists(updatedUserLists);
+        setUserLists((prevState) => [...prevState, res.data.list]);
         toggleCreatingList();
       })
       .catch((err) => {
@@ -173,26 +158,29 @@ const Board = (props) => {
 
   const editListNameHandler = (event, listId) => {
     event.preventDefault();
-    const listChangedIndex = userLists.lists.findIndex(
-      (list) => list._id.toString() === listId.toString()
+    const newListName = event.target.value.trim();
+
+    const changedList = userLists.find(
+      (list) => list._id.toString() === listId
     );
-    const updatedListName = event.target.value;
-
-    if (userLists.lists[listChangedIndex].name !== updatedListName) {
-      const updatedUserLists = copyUserListsArray(userLists);
-      updatedUserLists.lists[listChangedIndex].name = updatedListName;
-
+    if (newListName !== "" && newListName !== changedList.name) {
       axios
         .patch(
-          `board/list/${userLists._id}`,
-          {
-            updatedLists: updatedUserLists.lists,
-          },
+          `board/${boardId}/list/${listId}`,
+          { name: newListName },
           { headers: { Authorization: "Bearer " + token } }
         )
         .then((res) => {
-          setUserLists(updatedUserLists);
           console.log(res);
+          const updatedListIndex = userLists.findIndex(
+            (list) => list._id.toString() === listId
+          );
+          const updatedList = updateObject(userLists[updatedListIndex], {
+            name: res.data.list.name,
+          });
+          const updatedLists = [...userLists];
+          updatedLists.splice(updatedListIndex, 1, updatedList);
+          setUserLists(updatedLists);
         })
         .catch((err) => {
           console.log(err);
@@ -201,8 +189,8 @@ const Board = (props) => {
   };
 
   let lists = <p>Cargando</p>;
-  if (userLists && userLists.lists.length > 0) {
-    lists = userLists.lists.map((list) => (
+  if (userLists && userLists.length > 0) {
+    lists = userLists.map((list) => (
       <List
         key={list._id}
         listData={list}
@@ -210,8 +198,8 @@ const Board = (props) => {
         cardName={cardName}
         cardNameChanged={(event) => setCardName(event.target.value)}
         setCardCreator={(id) => toggleCardCreator(id)}
-        createCard={createCardHandler}
-        editListName={(event) => editListNameHandler(event, list._id)}
+        createCard={() => createCardHandler(list._id)}
+        editListName={(e) => editListNameHandler(e, list._id)}
       />
     ));
   }

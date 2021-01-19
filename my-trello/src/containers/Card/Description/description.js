@@ -32,7 +32,9 @@ const Description = (props) => {
   };
 
   const saveDescription = () => {
-    inputSaveDescription(descriptionInput.elementKey, descriptionInput.value);
+    if (descriptionInput.value.trim() !== "") {
+      inputSaveDescription(descriptionInput.elementKey, descriptionInput.value);
+    }
     toggleEditor();
   };
 

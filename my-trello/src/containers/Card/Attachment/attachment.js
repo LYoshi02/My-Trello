@@ -53,6 +53,7 @@ const Attachment = ({
     const data = new FormData();
     data.append("attachedFile", event.target.files[0]);
     onCreateAttachment(data);
+    closeModalHandler();
   };
 
   const closeModalHandler = () => {

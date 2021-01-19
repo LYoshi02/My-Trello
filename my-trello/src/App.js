@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-  useHistory,
-} from "react-router-dom";
+import { Switch, Route, Redirect, useHistory } from "react-router-dom";
 
 import axios from "./axios-instance";
 import Board from "./containers/Board/board";
@@ -81,7 +75,7 @@ function App() {
         history.push("/boards");
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response);
       });
     console.log(user);
   };
@@ -91,10 +85,11 @@ function App() {
       .put("auth/signup", user)
       .then((res) => {
         console.log(res);
+        console.log(history);
         history.push("/login");
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(({ response }) => {
+        console.log(response);
       });
     console.log(user);
   };
@@ -106,7 +101,7 @@ function App() {
         render={() => <Signup onSignup={signupHandler} />}
       />
       <Route path="/login" render={() => <Login onLogin={loginHandler} />} />
-      <Redirect to="/login" />
+      {/* <Redirect to="/login" /> */}
     </Switch>
   );
 
@@ -132,11 +127,7 @@ function App() {
     );
   }
 
-  return (
-    <Router>
-      <Layout>{routes}</Layout>
-    </Router>
-  );
+  return <Layout>{routes}</Layout>;
 }
 
 export default App;

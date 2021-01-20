@@ -7,7 +7,7 @@ import {
 
 import classes from "./cardPreview.module.scss";
 
-const CardPreview = ({ provided, onOpenCard, cardData }) => {
+const CardPreview = ({ provided, onOpenCard, cardData, isDragging }) => {
   let cardTags = null;
   if (cardData.selectedTags.length > 0) {
     cardTags = (
@@ -39,16 +39,18 @@ const CardPreview = ({ provided, onOpenCard, cardData }) => {
       completedItems += checklist.items.filter((i) => i.completed).length;
     });
 
-    const checklistClasses = [classes.Checklists];
-    if (totalItems === completedItems) {
-      checklistClasses.push(classes.ChecklistsCompleted);
-    }
+    if (totalItems > 0) {
+      const checklistClasses = [classes.Checklists];
+      if (totalItems === completedItems) {
+        checklistClasses.push(classes.ChecklistsCompleted);
+      }
 
-    checklist = (
-      <span className={checklistClasses.join(" ")}>
-        <IoCheckboxOutline /> {`${completedItems} / ${totalItems}`}
-      </span>
-    );
+      checklist = (
+        <span className={checklistClasses.join(" ")}>
+          <IoCheckboxOutline /> {`${completedItems} / ${totalItems}`}
+        </span>
+      );
+    }
   }
 
   let attachments = null;
@@ -72,9 +74,14 @@ const CardPreview = ({ provided, onOpenCard, cardData }) => {
     );
   }
 
+  let cardClasses = [classes.Card];
+  if (isDragging) {
+    cardClasses.push(classes.CardDragged);
+  }
+
   return (
     <div
-      className={classes.Card}
+      className={cardClasses.join(" ")}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       onClick={onOpenCard}

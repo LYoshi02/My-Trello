@@ -20,6 +20,25 @@
     span {
         border-radius: $border-radius;
         height: 100%;
+        width: 100%;
         display: block;
+        transform-origin: left;
+        transition: $trn-short;
+    }
+}
+
+.DeleteButton {
+    color: $clr-secondary-5;
+    transition: $trn-short;
+    margin-left: 1rem;
+
+    &:hover {
+        color: $clr-secondary-7;
+    }
+}
+
+.ActionButtons {
+    input {
+        font-weight: normal;
     }
 }

@@ -1,15 +1,21 @@
 @import "../../../styles/variables";
 
 .Card {
-    background-color: $clr-light;
+    background-color: $clr-grey-1;
+    box-shadow: $light-shadow;
     padding: 1rem;
     border-radius: $border-radius;
     font-size: 1.4rem;
     margin-bottom: 1rem;
+    transition: $trn-short;
 
     span {
         display: inline-flex;
         align-items: center;
+    }
+
+    &:hover {
+        background-color: rgba($clr-grey-1, .6);
     }
 }
 
@@ -54,6 +60,11 @@
 
 .ChecklistsCompleted {
     background-color: #16c79a;
-    color: $clr-light;
+    color: $clr-grey-1;
     font-weight: bold;
+}
+
+.CardDragged {
+    box-shadow: $dark-shadow;
+    background-color: $clr-secondary-1;
 }

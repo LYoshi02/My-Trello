@@ -1,13 +1,10 @@
 import React from "react";
-
-import classes from "./layout.module.scss";
+import Navbar from "./Navbar/navbar";
 
 const Layout = (props) => {
   return (
     <>
-      <div className={classes.Layout}>
-        <p>The navbar</p>
-      </div>
+      <Navbar />
       {props.children}
     </>
   );

@@ -1,10 +1,38 @@
 // Colors
-$clr-primary-dark: #026aa7;
-$clr-primary: #f05454;
-$clr-primary-light: #f1d4d4;
+$clr-primary-10: #050411;
+$clr-primary-9: #100b32;
+$clr-primary-8: #1b1354;
+$clr-primary-7: #261b75;
+$clr-primary-6: #312296;
+$clr-primary-5: #3626a7;
+$clr-primary-4: #5e51b9;
+$clr-primary-3: #867dca;
+$clr-primary-2: #afa8dc;
+$clr-primary-1: #d7d4ed;
 
-$clr-light: #fafbfc;
-$clr-dark: #000000;
+$clr-secondary-10: #190503;
+$clr-secondary-9: #330a06;
+$clr-secondary-8: #66140c;
+$clr-secondary-7: #991f13;
+$clr-secondary-6: #cc2919;
+$clr-secondary-5: #ff331f;
+$clr-secondary-4: #ff5c4c;
+$clr-secondary-3: #ff8579;
+$clr-secondary-2: #ffada5;
+$clr-secondary-1: #ffd6d2;
+
+$clr-grey-1: #f5f5f5;
+$clr-grey-2: #eaeaeb;
+$clr-grey-3: #e0e0e0;
+$clr-grey-4: #d5d5d6;
+$clr-grey-5: #cbcbcc;
+$clr-grey-6: #979799;
+$clr-grey-7: #79797a;
+$clr-grey-8: #5b5b5c;
+$clr-grey-9: #3c3c3d;
+$clr-grey-10: #1e1e1f;
+
+$clr-dark: #0d0106;
 
 // Transitions
 $trn-long: .5s all ease-in-out;
@@ -18,5 +46,11 @@ $bp-small: 31.25em; // 500px
 // Fonts
 $ff-primary: 'Roboto', sans-serif;
 
+// Shadows
+$light-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+$dark-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+
 // Others
 $border-radius: 3px;
+$letter-spacing-sma: 1.5px;
+$letter-spacing-med: 3px;

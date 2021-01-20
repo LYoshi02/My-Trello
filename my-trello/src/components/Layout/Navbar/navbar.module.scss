@@ -1,0 +1,29 @@
+@import "../../../styles/variables";
+
+.Navbar {
+    height: 5rem;
+    padding: .5rem 2rem;
+    background-color: $clr-primary-7;
+    color: $clr-grey-1;
+}
+
+.Button {
+    background-color: rgba($clr-grey-2, .3);
+    font-size: 1.8rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: .5rem 1.5rem;
+    border-radius: $border-radius;
+    height: 100%;
+    transition: $trn-short;
+    text-transform: capitalize;
+
+    svg {
+        margin-right: .5rem;
+    }
+
+    &:hover {
+        background-color: rgba($clr-grey-2, .2);
+    }
+}

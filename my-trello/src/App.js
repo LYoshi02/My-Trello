@@ -101,12 +101,11 @@ function App() {
         render={() => <Signup onSignup={signupHandler} />}
       />
       <Route path="/login" render={() => <Login onLogin={loginHandler} />} />
-      {/* <Redirect to="/login" /> */}
+      <Redirect to="/login" />
     </Switch>
   );
 
   if (authData.isAuth) {
-    console.log(authData.token);
     routes = (
       <Switch>
         <Route

@@ -1,5 +1,12 @@
 import React from "react";
 
+import {
+  IoCheckboxOutline,
+  IoPricetagOutline,
+  IoAttachOutline,
+  IoTrashOutline,
+} from "react-icons/io5";
+
 import classes from "./actions.module.scss";
 
 const actionItems = {
@@ -9,14 +16,17 @@ const actionItems = {
       {
         name: "Checklist",
         modalType: "checklist",
+        icon: <IoCheckboxOutline />,
       },
       {
         name: "Etiquetas",
         modalType: "tag",
+        icon: <IoPricetagOutline />,
       },
       {
         name: "Adjunto",
         modalType: "attachment",
+        icon: <IoAttachOutline />,
       },
     ],
   },
@@ -26,6 +36,7 @@ const actionItems = {
       {
         name: "Borrar",
         modalType: "delete",
+        icon: <IoTrashOutline />,
       },
     ],
   },
@@ -36,6 +47,7 @@ const Actions = ({ toggleModal }) => {
   for (let itemKey in actionItems) {
     const itemElements = actionItems[itemKey].items.map((item) => (
       <button key={item.name} onClick={() => toggleModal(item.modalType)}>
+        {item.icon}
         {item.name}
       </button>
     ));

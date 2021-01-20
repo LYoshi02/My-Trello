@@ -23,6 +23,7 @@ const MarkdownEditor = (props) => {
       />
       <ActionButtons
         btnType="button"
+        btnColor="primary"
         btnContent="Guardar"
         cancelAction={closeEditor}
       />

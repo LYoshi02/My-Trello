@@ -6,20 +6,22 @@
     border-radius: $border-radius;
     transition: $trn-short;
     margin-bottom: 2rem;
+    background-color: $clr-grey-2;
 
     &:hover {
-        background-color: #eaecf0;
+        background-color: $clr-grey-3;
         cursor: pointer;
     }
 
     &:hover .ThumbnailType {
-        background-color: #e1e4ea;
+        background-color: $clr-grey-4;
+        color: $clr-grey-9;
     }
 }
 
 .ThumbnailType {
-    background-color: #eaecf0;
-    color: #5e6c84;
+    background-color: $clr-grey-3;
+    color: $clr-grey-8;
     width: 25%;
     font-size: 2.5rem;
     font-weight: bold;
@@ -62,5 +64,10 @@
 
     span {
         text-decoration: underline;
+        color: $clr-grey-8;
+    }
+
+    span:hover {
+        color: $clr-dark;
     }
 }

@@ -1,28 +1,40 @@
+@import "../../../../../../styles/variables";
+
 .Item {
     display: flex;
     align-items: center;
     margin-bottom: 1.5rem;
+    
+    input {
+        font-weight: normal;
+    }
 
     input[type=checkbox] {
-        height: 1.75rem;
-        width: 1.75rem;
+        height: 2rem;
+        width: 2rem;
         margin-right: 2rem;
+
+        &:hover {
+            cursor: pointer;
+        }
     }
 
     span {
         font-size: 1.4rem;
-    }
-
-    
+    }    
 }
 
 .Delete {
+    svg {
+        font-size: 2.5rem;
+        color: $clr-grey-9; 
+    }
 
     &:hover {
         cursor: pointer;
     }
 
-    svg {
-        font-size: 2.5rem;
+    &:hover svg {
+        color: $clr-grey-10; 
     }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { IoBrowsersOutline } from "react-icons/io5";
+import { IoJournalOutline } from "react-icons/io5";
 
 import CardHeading from "../../../components/Card/Heading/heading";
 import TransparentInput from "../../../components/UI/TransparentInput/transparentInput";
@@ -35,7 +35,7 @@ const Name = (props) => {
   return (
     <div>
       <CardHeading>
-        <IoBrowsersOutline />
+        <IoJournalOutline />
         <TransparentInput
           inputData={nameInput}
           inputChanged={(e) => updateName(e.target.value)}

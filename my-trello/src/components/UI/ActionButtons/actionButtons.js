@@ -6,11 +6,16 @@ import Button from "../Button/button";
 import classes from "./actionButtons.module.scss";
 
 const ActionButtons = (props) => {
-  const { btnType, btnContent, cancelAction, primaryAction } = props;
+  const { btnType, btnColor, btnContent, cancelAction, primaryAction } = props;
 
   return (
     <div className={classes.ActionButtons}>
-      <Button type={btnType} clicked={primaryAction}>
+      <Button
+        color={btnColor}
+        variant="contained"
+        type={btnType}
+        clicked={primaryAction}
+      >
         {btnContent}
       </Button>
       <IoCloseOutline onClick={cancelAction} />

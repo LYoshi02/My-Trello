@@ -11,11 +11,15 @@
         font-size: 2rem;
         display: flex;
         align-items: center;
+        font-weight: bold;
+        letter-spacing: $letter-spacing-sma;
+        color: $clr-grey-10;
     }
 
     svg {
-        font-size:  2.5rem;
-        margin-right: 1.25rem;
+        font-size:  3rem;
+        margin-right: 1rem;
+        color: $clr-grey-8;
     }
 }
 
@@ -24,45 +28,55 @@
     list-style: none;
     display: flex;
     flex-wrap: wrap;
-
+    
     li {
         display: inline-block;
         border-radius: $border-radius;
         height: 9rem;
         width: 20rem;
-        background-color: #89609e;
         margin-right: 2rem;
         margin-bottom: 2rem;
+        font-size: 1.6rem;
+        letter-spacing: $letter-spacing-sma;
     }
+}
+
+.BoardItem {
+    background-color: $clr-secondary-6;
 
     a:link,
-    a:visited,
-    p {
-        display: block;
+    a:visited {
         height: 100%;
         width: 100%;
+        display: block;
         padding-top: 1rem;
         padding-left: 1rem;
         text-decoration: none;
-        color: $clr-light;
-        font-size: 1.5rem;
+        color: $clr-grey-1;
         font-weight: bold;
     }
 }
 
 .CreateBoard {
-    background-color: #f0f2f5 !important;
+    background-color: $clr-grey-2;
+    transition: $trn-short;
 
     &:hover {
+        background-color: $clr-grey-3;
         cursor: pointer;
     }
 
     p {
-        color: #172b4d;
+        color: $clr-grey-10;
+        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
         font-weight: normal;
         padding: 0;
+    }
+
+    &:active p {
+        color: $clr-primary-5;
     }
 }

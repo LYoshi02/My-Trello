@@ -1,5 +1,5 @@
 import React from "react";
-import { IoCheckboxOutline } from "react-icons/io5";
+import { IoCheckboxOutline, IoTrashOutline } from "react-icons/io5";
 
 import ActionButtons from "../../../../UI/ActionButtons/actionButtons";
 import Button from "../../../../UI/Button/button";
@@ -73,12 +73,17 @@ const ChecklistComponent = (props) => {
   };
 
   const progressBarStyles = {
-    width: `${progressPercentage}%`,
+    transform: `scaleX(${progressPercentage / 100})`,
     backgroundColor: progressPercentage < 100 ? "#f05454" : "#16c79a",
   };
 
   let actionButton = (
-    <Button type="button" clicked={() => setCreator(data._id)}>
+    <Button
+      type="button"
+      variant="contained"
+      color="primary"
+      clicked={() => setCreator(data._id)}
+    >
       Añada un Elemento
     </Button>
   );
@@ -91,6 +96,7 @@ const ChecklistComponent = (props) => {
         />
         <ActionButtons
           btnType="button"
+          btnColor="primary"
           btnContent="Añadir"
           cancelAction={() => setCreator(null)}
         />
@@ -106,9 +112,13 @@ const ChecklistComponent = (props) => {
           inputData={checklistNameInput}
           blurred={changeListName}
         />
-        <Button type="button" clicked={deleteChecklist}>
-          Eliminar
-        </Button>
+        <button
+          className={classes.DeleteButton}
+          type="button"
+          onClick={deleteChecklist}
+        >
+          <IoTrashOutline />
+        </button>
       </CardHeading>
 
       <div>
@@ -121,7 +131,7 @@ const ChecklistComponent = (props) => {
 
         <div>{checkElements}</div>
 
-        <div>{actionButton}</div>
+        <div className={classes.ActionButtons}>{actionButton}</div>
       </div>
     </div>
   );

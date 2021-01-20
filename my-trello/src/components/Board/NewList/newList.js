@@ -2,6 +2,7 @@ import React from "react";
 import { IoAddOutline } from "react-icons/io5";
 
 import ActionButtons from "../../UI/ActionButtons/actionButtons";
+import Button from "../../UI/Button/button";
 
 import classes from "./newList.module.scss";
 
@@ -15,10 +16,15 @@ const NewList = (props) => {
   } = props;
 
   let newListContent = (
-    <div className={classes.NewList} onClick={toggleCreating}>
-      <p>
+    <div className={classes.NewList}>
+      <Button
+        type="button"
+        color="secondary"
+        variant="contained"
+        clicked={toggleCreating}
+      >
         <IoAddOutline /> Añada otra lista
-      </p>
+      </Button>
     </div>
   );
   if (creating) {
@@ -35,6 +41,7 @@ const NewList = (props) => {
         </div>
         <ActionButtons
           btnType="submit"
+          btnColor="secondary"
           btnContent="Añadir lista"
           cancelAction={toggleCreating}
         />

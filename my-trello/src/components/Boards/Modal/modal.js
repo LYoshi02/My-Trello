@@ -18,7 +18,7 @@ const Modal = (props) => {
               value={props.boardName}
               onChange={props.boardNameChanged}
             />
-            <IoCloseOutline onClick={props.clicked} />
+            <IoCloseOutline onClick={props.closeModal} />
           </div>
 
           <div className={classes.ModalBackground}>

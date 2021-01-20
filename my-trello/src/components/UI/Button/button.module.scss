@@ -3,10 +3,56 @@
 .Button {
     padding: .75rem 2rem;
     border-radius: $border-radius;
-    margin-right: 1rem;
     text-transform: capitalize;
-    background-color: $clr-primary;
-    color: $clr-light;
     font-weight: bold;
     font-size: 1.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: $trn-short;
+
+    svg {
+        font-size: 2.75rem;
+        margin-right: 1rem;
+    }
+}
+
+.ContainedPrimary {
+    background-color: $clr-primary-5;
+    color: $clr-grey-1;
+
+    &:hover {
+        background-color: $clr-primary-7;
+    }
+}
+
+.OutlinedPrimary {
+    border: 2px solid $clr-primary-5;
+    color: $clr-primary-5;
+    background-color: transparent;
+
+    &:hover {
+        border: 2px solid $clr-primary-7;
+    color: $clr-primary-7;
+    }
+}
+
+.ContainedSecondary {
+    background-color: $clr-secondary-5;
+    color: $clr-grey-1;
+
+    &:hover {
+        background-color: $clr-secondary-7;
+    }
+}
+
+.OutlinedSecondary {
+    border: 2px solid $clr-secondary-5;
+    color: $clr-secondary-5;
+    background-color: transparent;
+
+    &:hover {
+        border: 2px solid $clr-secondary-7;
+    color: $clr-secondary-7;
+    }
 }

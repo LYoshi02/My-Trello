@@ -59,7 +59,7 @@ const Boards = ({ token }) => {
     boards = <span>Loading your boards...</span>;
   } else if (userBoards && userBoards.length > 0) {
     boards = userBoards.map((board) => (
-      <li key={board._id}>
+      <li key={board._id} className={classes.BoardItem}>
         <Link to={`/board/${board._id}`}>{board.name}</Link>
       </li>
     ));

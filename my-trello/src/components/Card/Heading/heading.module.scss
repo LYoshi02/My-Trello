@@ -1,7 +1,10 @@
+@import "../../../styles/variables";
+
 .Heading {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
+    color: $clr-grey-10;
 
     svg {
         margin-right: 1rem;
@@ -10,6 +13,6 @@
     }
 
     h2, input {
-        font-size: 2rem;
+        font-size: 1.75rem;
     }
 }

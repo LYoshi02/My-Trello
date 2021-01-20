@@ -1,13 +1,14 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { IoAddOutline } from "react-icons/io5";
+import { IoAddSharp } from "react-icons/io5";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 
 import ActionButtons from "../../UI/ActionButtons/actionButtons";
+import Button from "../../UI/Button/button";
+import CardPreview from "../CardPreview/cardPreview";
 import TransparentInput from "../../UI/TransparentInput/transparentInput";
 
 import classes from "./list.module.scss";
-import CardPreview from "../CardPreview/cardPreview";
 
 const List = (props) => {
   const {
@@ -30,11 +31,12 @@ const List = (props) => {
   if (listData.cardIds.length > 0) {
     listCards = listData.cardIds.map((card, index) => (
       <Draggable key={card._id} draggableId={card._id} index={index}>
-        {(provided) => (
+        {(provided, snapshot) => (
           <CardPreview
             provided={provided}
             onOpenCard={() => openCard(card._id)}
             cardData={card}
+            isDragging={snapshot.isDragging}
           />
         )}
       </Draggable>
@@ -42,15 +44,21 @@ const List = (props) => {
   }
 
   let cardAction = (
-    <button type="button" onClick={() => setCardCreator(listData._id)}>
-      <IoAddOutline />
+    <Button
+      type="button"
+      color="primary"
+      variant="outlined"
+      clicked={() => setCardCreator(listData._id)}
+    >
+      <IoAddSharp />
       Añada otra tarjeta
-    </button>
+    </Button>
   );
   if (columnCreateCard.toString() === listData._id.toString()) {
     cardAction = (
       <ActionButtons
         btnType="button"
+        btnColor="primary"
         btnContent="crear tarjeta"
         primaryAction={createCard}
         cancelAction={() => setCardCreator("")}

@@ -27,7 +27,7 @@ const Attachment = ({
         ...linkData,
         type: "link",
       };
-      onCreateAttachment(newAttachment);
+      onCreateAttachment(newAttachment, "link");
     } else {
       const updatedAttachments = [...fetchedAttachments];
       const changedAttachmentIndex = fetchedAttachments.findIndex(
@@ -52,7 +52,7 @@ const Attachment = ({
   const fileUploadHandler = (event) => {
     const data = new FormData();
     data.append("attachedFile", event.target.files[0]);
-    onCreateAttachment(data);
+    onCreateAttachment(data, "file");
     closeModalHandler();
   };
 

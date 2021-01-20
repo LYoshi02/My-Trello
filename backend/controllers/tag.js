@@ -1,3 +1,5 @@
+const { validationResult } = require("express-validator");
+
 const Card = require("../models/card");
 const Tag = require("../models/tag");
 const { validateBoardCreator } = require("../util/board");
@@ -26,8 +28,16 @@ exports.createTag = async (req, res, next) => {
   const boardId = req.params.boardId;
   const userId = req.userId;
   const tagBody = req.body;
+  const errors = validationResult(req);
 
   try {
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation failed");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
     const boardValidationError = await validateBoardCreator(boardId, userId);
     if (boardValidationError) {
       throw boardValidationError;
@@ -50,8 +60,16 @@ exports.updateTag = async (req, res, next) => {
   const userId = req.userId;
   const tagId = req.params.tagId;
   const updatedTag = req.body;
+  const errors = validationResult(req);
 
   try {
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation failed");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
     const boardValidationError = await validateBoardCreator(boardId, userId);
     if (boardValidationError) {
       throw boardValidationError;

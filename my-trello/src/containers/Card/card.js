@@ -97,9 +97,14 @@ const Card = (props) => {
     setCardData(updatedCard);
   };
 
-  const createAttachmentHandler = (attachmentData) => {
+  const createAttachmentHandler = (attachmentData, type) => {
+    let url = `card/${cardId}/attach-link`;
+    if (type === "file") {
+      url = `card/${cardId}/attach-file`;
+    }
+
     axios
-      .post(`card/${cardId}/attachment`, attachmentData, {
+      .post(url, attachmentData, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {

@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const uuid = require("uuid");
+const { body } = require("express-validator");
 
 const cardController = require("../controllers/card");
 const isAuth = require("../middleware/is-auth");
@@ -23,15 +24,30 @@ const upload = multer({
 
 router.get("/card/:cardId", isAuth, cardController.getCard);
 
-router.put("/card/:cardId", isAuth, cardController.updateCard);
+router.put(
+  "/card/:cardId",
+  isAuth,
+  [body("card.name", "The card name cannot be empty").trim().notEmpty()],
+  cardController.updateCard
+);
 
 router.delete("/card/:cardId", isAuth, cardController.deleteCard);
 
 router.post(
-  "/card/:cardId/attachment",
+  "/card/:cardId/attach-file",
   isAuth,
   upload.single("attachedFile"),
-  cardController.createAttachment
+  cardController.createFileAttachment
+);
+
+router.post(
+  "/card/:cardId/attach-link",
+  isAuth,
+  [
+    body("url", "The url provided is not valid").trim().isURL(),
+    body("type", "The attachment type cannot be empty").trim().notEmpty(),
+  ],
+  cardController.createLinkAttachment
 );
 
 router.delete(

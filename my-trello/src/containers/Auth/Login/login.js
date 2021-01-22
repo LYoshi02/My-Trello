@@ -1,67 +1,135 @@
 import React, { useState } from "react";
 
 import Button from "../../../components/UI/Button/button";
-import { updateObject } from "../../../util/helpers";
+import { updateObject, checkInputValidity } from "../../../util/helpers";
 
 import classes from "../auth.module.scss";
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, loading, error }) => {
+  const [isFormValid, setIsFormValid] = useState(false);
   const [loginForm, setLoginForm] = useState({
     email: {
-      value: "test@test.com",
+      label: "Correo Electrónico",
+      elementConfig: {
+        type: "email",
+        placeholder: "Tu correo",
+      },
+      value: "",
+      validation: {
+        required: true,
+        isEmail: true,
+      },
+      valid: false,
+      touched: false,
+      message: "",
     },
     password: {
-      value: "12345",
+      label: "Contraseña",
+      elementConfig: {
+        type: "password",
+        placeholder: "Tu contraseña",
+      },
+      value: "",
+      validation: {
+        required: true,
+        minLength: 6,
+      },
+      valid: false,
+      touched: false,
+      message: "",
     },
   });
 
   const submitFormHandler = (event) => {
     event.preventDefault();
-    const user = {};
-    for (let key in loginForm) {
-      user[key] = loginForm[key].value;
-    }
+    if (isFormValid) {
+      const user = {};
+      for (let key in loginForm) {
+        user[key] = loginForm[key].value;
+      }
 
-    onLogin(user);
+      onLogin(user);
+    }
   };
 
   const inputChangedHandler = (input, value) => {
-    setLoginForm((prevState) => {
-      const updatedInput = updateObject(prevState[input], { value });
-      return updateObject(prevState, {
-        [input]: updatedInput,
-      });
+    const validationObject = checkInputValidity(
+      value,
+      loginForm[input].validation
+    );
+    const updatedForm = updateObject(loginForm, {
+      [input]: updateObject(loginForm[input], {
+        value,
+        valid: validationObject.isValid,
+        message: validationObject.message,
+        touched: true,
+      }),
     });
+
+    let formValidity = true;
+    for (let key in updatedForm) {
+      formValidity = updatedForm[key].valid && formValidity;
+    }
+
+    setLoginForm(updatedForm);
+    setIsFormValid(formValidity);
   };
+
+  const formElementsArray = [];
+  for (let key in loginForm) {
+    formElementsArray.push({ id: key, config: loginForm[key] });
+  }
+
+  let form = formElementsArray.map((formElement) => {
+    const {
+      label,
+      elementConfig,
+      value,
+      valid,
+      touched,
+      message,
+    } = formElement.config;
+    const isError = !valid && touched;
+    const elementClasses = [classes.FormGroup];
+
+    if (isError) elementClasses.push(classes.FormGroupError);
+
+    return (
+      <div className={elementClasses.join(" ")} key={formElement.id}>
+        <label htmlFor={formElement.id}>{label}</label>
+        <input
+          {...elementConfig}
+          id={formElement.id}
+          value={value}
+          onBlur={(e) => inputChangedHandler(formElement.id, e.target.value)}
+          onChange={(e) => inputChangedHandler(formElement.id, e.target.value)}
+        />
+        {isError && <span>{message}</span>}
+      </div>
+    );
+  });
+
+  let errorMessage = null;
+  if (error) {
+    errorMessage = <div className={classes.ErrorMessage}>{error}</div>;
+  }
 
   return (
     <div className={classes.Container}>
+      {errorMessage}
       <div className={classes.Form}>
         <h2>Iniciar Sesion</h2>
         <form onSubmit={submitFormHandler}>
-          <div className={classes.FormGroup}>
-            <label htmlFor="email">Correo Electrónico</label>
-            <input
-              type="email"
-              placeholder="Tu correo"
-              id="email"
-              value={loginForm["email"].value}
-              onChange={(e) => inputChangedHandler("email", e.target.value)}
-            />
-          </div>
+          {form}
 
-          <div className={classes.FormGroup}>
-            <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              placeholder="Tu contraseña"
-              id="password"
-              value={loginForm["password"].value}
-              onChange={(e) => inputChangedHandler("password", e.target.value)}
-            />
-          </div>
-
-          <Button type="submit">Iniciar sesion</Button>
+          <Button
+            btnDisabled={!isFormValid || loading}
+            color="primary"
+            variant="contained"
+            type="submit"
+          >
+            {!loading ? "Iniciar sesion" : "Autenticando..."}
+          </Button>
         </form>
       </div>
     </div>

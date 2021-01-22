@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Switch, Route, Redirect, useHistory } from "react-router-dom";
 
 import axios from "./axios-instance";
@@ -14,11 +14,33 @@ import "./styles/tag-colors.scss";
 
 function App() {
   const history = useHistory();
+  const [reqLoading, setReqLoading] = useState(false);
+  const [reqError, setReqError] = useState(null);
   const [authData, setAuthData] = useState({
     isAuth: false,
     token: null,
     userId: null,
   });
+
+  const logoutHandler = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("expiryDate");
+    setAuthData({
+      isAuth: false,
+      token: null,
+      userId: null,
+    });
+  }, []);
+
+  const setAutoLogout = useCallback(
+    (milliseconds) => {
+      setTimeout(() => {
+        logoutHandler();
+      }, milliseconds);
+    },
+    [logoutHandler]
+  );
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,21 +62,12 @@ function App() {
       userId,
     });
     setAutoLogout(remainingMilliseconds);
-  }, []);
-
-  const logoutHandler = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("expiryDate");
-  };
-
-  const setAutoLogout = (milliseconds) => {
-    setTimeout(() => {
-      logoutHandler();
-    }, milliseconds);
-  };
+  }, [logoutHandler, setAutoLogout]);
 
   const loginHandler = (user) => {
+    setReqLoading(true);
+    setReqError(null);
+
     axios
       .post("auth/login", user)
       .then((res) => {
@@ -64,6 +77,7 @@ function App() {
           token: res.data.token,
           userId: res.data.userId,
         });
+        setReqLoading(false);
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userId", res.data.userId);
         const remainingMilliseconds = 60 * 60 * 24000;
@@ -75,32 +89,54 @@ function App() {
         history.push("/boards");
       })
       .catch((err) => {
-        console.log(err.response);
+        setReqLoading(false);
+        setReqError(err.response.data.message);
+
+        setTimeout(() => {
+          setReqError(null);
+        }, 5000);
       });
     console.log(user);
   };
 
   const signupHandler = (user) => {
+    setReqLoading(true);
+    setReqError(null);
+
     axios
       .put("auth/signup", user)
-      .then((res) => {
-        console.log(res);
-        console.log(history);
+      .then(() => {
+        setReqLoading(false);
         history.push("/login");
       })
-      .catch(({ response }) => {
-        console.log(response);
+      .catch((err) => {
+        setReqLoading(false);
+        setReqError(err.response.data.message);
+
+        setTimeout(() => {
+          setReqError(null);
+        }, 5000);
       });
-    console.log(user);
   };
 
   let routes = (
     <Switch>
       <Route
         path="/signup"
-        render={() => <Signup onSignup={signupHandler} />}
+        render={() => (
+          <Signup
+            onSignup={signupHandler}
+            loading={reqLoading}
+            error={reqError}
+          />
+        )}
       />
-      <Route path="/login" render={() => <Login onLogin={loginHandler} />} />
+      <Route
+        path="/login"
+        render={() => (
+          <Login onLogin={loginHandler} loading={reqLoading} error={reqError} />
+        )}
+      />
       <Redirect to="/login" />
     </Switch>
   );
@@ -126,7 +162,11 @@ function App() {
     );
   }
 
-  return <Layout>{routes}</Layout>;
+  return (
+    <Layout isAuth={authData.isAuth} logout={logoutHandler}>
+      {routes}
+    </Layout>
+  );
 }
 
 export default App;

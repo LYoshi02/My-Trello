@@ -11,9 +11,16 @@ exports.signupUser = async (req, res, next) => {
 
   try {
     if (!errors.isEmpty()) {
-      const error = new Error("Validation failed");
+      const error = new Error("Los campos ingresados no son válidos");
       error.statusCode = 422;
       error.data = errors.array();
+      throw error;
+    }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      const error = new Error("El correo ingresado ya se encuentra en uso");
+      error.statusCode = 401;
       throw error;
     }
 
@@ -36,7 +43,7 @@ exports.loginUser = async (req, res, next) => {
 
   try {
     if (!errors.isEmpty()) {
-      const error = new Error("Validation failed");
+      const error = new Error("Los campos ingresados no son válidos");
       error.statusCode = 422;
       error.data = errors.array();
       throw error;
@@ -44,12 +51,20 @@ exports.loginUser = async (req, res, next) => {
 
     const userExists = await User.findOne({ email });
     if (!userExists) {
-      throw new Error("The email or password entered are not correct");
+      const error = new Error(
+        "El correo o la contraseña ingresados no son correctos"
+      );
+      error.statusCode = 401;
+      throw error;
     }
 
     const isPasswordEqual = await bcrypt.compare(password, userExists.password);
     if (!isPasswordEqual) {
-      throw new Error("The email or password entered are not correct");
+      const error = new Error(
+        "El correo o la contraseña ingresados no son correctos"
+      );
+      error.statusCode = 401;
+      throw error;
     }
 
     const token = jwt.sign(

@@ -3,6 +3,8 @@ import React from "react";
 import Button from "../../../../UI/Button/button";
 import CardModal from "../../../Modal/modal";
 
+import classes from "./attachmentsModal.module.scss";
+
 const AttachmentsModal = ({
   inputData,
   isEditing,
@@ -15,11 +17,17 @@ const AttachmentsModal = ({
   if (!isEditing) {
     modalForm = (
       <>
-        <div>
-          <input type="file" name="attachedFile" onChange={onFileUpload} />
+        <div className={classes.FileUpload}>
+          <label htmlFor="file">Subir archivo</label>
+          <input
+            type="file"
+            id="file"
+            name="attachedFile"
+            onChange={onFileUpload}
+          />
         </div>
 
-        <div>
+        <div className={classes.FormGroup}>
           <label htmlFor="link">Adjuntar un enlace:</label>
           <input
             type="url"
@@ -38,7 +46,7 @@ const AttachmentsModal = ({
 
       <form onSubmit={onSubmitForm}>
         {modalForm}
-        <div>
+        <div className={classes.FormGroup}>
           <label htmlFor="link-name">Nombre del enlace:</label>
           <input
             type="text"
@@ -47,7 +55,9 @@ const AttachmentsModal = ({
             onChange={(e) => onInputChanged(e.target.value, "name")}
           />
         </div>
-        <Button type="submit">{isEditing ? "Editar" : "Adjuntar"}</Button>
+        <Button color="secondary" variant="contained" type="submit">
+          {isEditing ? "Editar" : "Adjuntar"}
+        </Button>
       </form>
     </CardModal>
   );

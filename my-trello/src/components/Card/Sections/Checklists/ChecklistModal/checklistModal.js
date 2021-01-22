@@ -21,7 +21,9 @@ const ChecklistModal = ({ close, submit, title, changed }) => {
           />
         </div>
 
-        <Button type="submit">Añadir</Button>
+        <Button color="secondary" variant="contained" type="submit">
+          Añadir
+        </Button>
       </form>
     </CardModal>
   );

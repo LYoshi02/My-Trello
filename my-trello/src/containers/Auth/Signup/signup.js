@@ -1,81 +1,149 @@
 import React, { useState } from "react";
 
 import Button from "../../../components/UI/Button/button";
-import { updateObject } from "../../../util/helpers";
+import { checkInputValidity, updateObject } from "../../../util/helpers";
 
 import classes from "../auth.module.scss";
 
-const Signup = ({ onSignup }) => {
+const Signup = ({ onSignup, loading, error }) => {
+  const [isFormValid, setIsFormValid] = useState(false);
   const [signupForm, setSignupForm] = useState({
     name: {
-      value: "Yoshi",
+      label: "Nombre",
+      elementConfig: {
+        type: "text",
+        placeholder: "Tu nombre",
+      },
+      value: "",
+      validation: {
+        required: true,
+        minLength: 3,
+      },
+      valid: false,
+      touched: false,
+      message: "",
     },
     email: {
-      value: "test@test.com",
+      label: "Correo Electrónico",
+      elementConfig: {
+        type: "email",
+        placeholder: "Tu correo",
+      },
+      value: "",
+      validation: {
+        required: true,
+        isEmail: true,
+      },
+      valid: false,
+      touched: false,
+      message: "",
     },
     password: {
-      value: "12345",
+      label: "Contraseña",
+      elementConfig: {
+        type: "password",
+        placeholder: "Tu contraseña",
+      },
+      value: "",
+      validation: {
+        required: true,
+        minLength: 6,
+      },
+      valid: false,
+      touched: false,
+      message: "",
     },
   });
 
   const submitFormHandler = (event) => {
     event.preventDefault();
-    const user = {};
-    for (let key in signupForm) {
-      user[key] = signupForm[key].value;
+    if (isFormValid) {
+      const user = {};
+      for (let key in signupForm) {
+        user[key] = signupForm[key].value;
+      }
+      onSignup(user);
     }
-
-    onSignup(user);
   };
 
   const inputChangedHandler = (input, value) => {
-    setSignupForm((prevState) => {
-      const updatedInput = updateObject(prevState[input], { value });
-      return updateObject(prevState, {
-        [input]: updatedInput,
-      });
+    const validationObject = checkInputValidity(
+      value,
+      signupForm[input].validation
+    );
+    const updatedForm = updateObject(signupForm, {
+      [input]: updateObject(signupForm[input], {
+        value,
+        valid: validationObject.isValid,
+        message: validationObject.message,
+        touched: true,
+      }),
     });
+
+    let formValidity = true;
+    for (let key in updatedForm) {
+      formValidity = updatedForm[key].valid && formValidity;
+    }
+
+    setSignupForm(updatedForm);
+    setIsFormValid(formValidity);
   };
+
+  const formElementsArray = [];
+  for (let key in signupForm) {
+    formElementsArray.push({ id: key, config: signupForm[key] });
+  }
+
+  let form = formElementsArray.map((formElement) => {
+    const {
+      label,
+      elementConfig,
+      value,
+      valid,
+      touched,
+      message,
+    } = formElement.config;
+    const isError = !valid && touched;
+    const elementClasses = [classes.FormGroup];
+
+    if (isError) elementClasses.push(classes.FormGroupError);
+
+    return (
+      <div className={elementClasses.join(" ")} key={formElement.id}>
+        <label htmlFor={formElement.id}>{label}</label>
+        <input
+          {...elementConfig}
+          id={formElement.id}
+          value={value}
+          onBlur={(e) => inputChangedHandler(formElement.id, e.target.value)}
+          onChange={(e) => inputChangedHandler(formElement.id, e.target.value)}
+        />
+        {isError && <span>{message}</span>}
+      </div>
+    );
+  });
+
+  let errorMessage = null;
+  if (error) {
+    errorMessage = <div className={classes.ErrorMessage}>{error}</div>;
+  }
 
   return (
     <div className={classes.Container}>
+      {errorMessage}
       <div className={classes.Form}>
         <h2>Crear Cuenta</h2>
         <form onSubmit={submitFormHandler}>
-          <div className={classes.FormGroup}>
-            <label htmlFor="name">Nombre</label>
-            <input
-              type="text"
-              placeholder="Tu nombre"
-              id="name"
-              value={signupForm["name"].value}
-              onChange={(e) => inputChangedHandler("name", e.target.value)}
-            />
-          </div>
+          {form}
 
-          <div className={classes.FormGroup}>
-            <label htmlFor="email">Correo Electrónico</label>
-            <input
-              type="email"
-              placeholder="Tu correo"
-              id="email"
-              value={signupForm["email"].value}
-              onChange={(e) => inputChangedHandler("email", e.target.value)}
-            />
-          </div>
-
-          <div className={classes.FormGroup}>
-            <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              placeholder="Tu contraseña"
-              id="password"
-              value={signupForm["password"].value}
-              onChange={(e) => inputChangedHandler("password", e.target.value)}
-            />
-          </div>
-
-          <Button type="submit">Crear cuenta</Button>
+          <Button
+            btnDisabled={!isFormValid || loading}
+            color="primary"
+            variant="contained"
+            type="submit"
+          >
+            {!loading ? "Crear Cuenta" : "Creando Cuenta..."}
+          </Button>
         </form>
       </div>
     </div>

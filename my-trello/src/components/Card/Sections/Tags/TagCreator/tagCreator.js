@@ -61,17 +61,27 @@ const TagCreator = ({
         />
       </div>
 
-      <div>
-        <p>Seleccionar un color</p>
+      <div className={classes.ColorsWrapper}>
+        <p>Seleccionar un color:</p>
         <div className={classes.Colors}>{colorElements}</div>
       </div>
 
       <div className={classes.ActionButtons}>
-        <Button type="button" clicked={tagAction}>
+        <Button
+          color="secondary"
+          variant="contained"
+          type="button"
+          clicked={tagAction}
+        >
           {creating ? "Crear" : "Editar"}
         </Button>
         {!creating && (
-          <Button type="button" clicked={onDeleteTag}>
+          <Button
+            color="secondary"
+            variant="outlined"
+            type="button"
+            clicked={onDeleteTag}
+          >
             Eliminar
           </Button>
         )}

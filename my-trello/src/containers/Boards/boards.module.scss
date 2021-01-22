@@ -39,6 +39,16 @@
         font-size: 1.6rem;
         letter-spacing: $letter-spacing-sma;
     }
+
+    @media only screen and(max-width: $bp-small) {
+        justify-content: space-between;
+
+        li {
+            width: 48%;
+            margin-right: 0;
+            margin-bottom: 2rem;
+        }
+    }
 }
 
 .BoardItem {

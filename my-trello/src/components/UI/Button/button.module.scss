@@ -11,6 +11,11 @@
     justify-content: center;
     transition: $trn-short;
 
+    &:disabled {
+        background-color: $clr-grey-10 !important;
+        cursor: not-allowed;
+    }
+
     svg {
         font-size: 2.75rem;
         margin-right: 1rem;

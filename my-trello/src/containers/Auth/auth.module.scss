@@ -3,28 +3,42 @@
 .Container {
     width: 100%;
     min-height: calc(100% - 5rem);
-    padding: 4rem 0;
+    padding: 4rem 2rem;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    background: $clr-primary-10;
 }
 
 .Form {
-    border: 1px solid red;
+    background-color: rgba(255,255,255,.05);
+    backdrop-filter: blur(10px);
+    color: $clr-grey-1;
     max-width: 50rem;
-    width: 90%;
+    width: 100%;
     border-radius: $border-radius;
-    padding: 4rem 2rem;
+    padding: 4rem;
+    position: relative;
 
     h2 {
-        font-size: 2.5rem;
+        font-size: 3rem;
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    button {
+        width: 100%;
+        padding: 1.75rem 0;
+    }
+
+    @media only screen and(max-width: $bp-small) {
+        padding: 4rem 2rem;
     }
 }
 
 .FormGroup {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     margin-bottom: 2rem;
 
     label {
@@ -36,5 +50,44 @@
         display: block;
         width: 100%;
         padding: 1rem .5rem;
+        outline: none;
+        border: none;
+        font-size: 1.6rem;
+        border-radius: $border-radius;
     }
+
+    input:focus {
+        box-shadow: 0 0 6px $clr-primary-1;
+    }
+}
+
+.FormGroupError {
+    input {
+        border: 2px solid $clr-secondary-5;
+    }
+
+    input:focus {
+        box-shadow: 0 0 6px $clr-secondary-5;
+    }
+
+    span {
+        display: block;
+        margin-top: .5rem;
+        color: $clr-secondary-5;
+        font-size: 1.4rem;
+    }
+}
+
+.ErrorMessage {
+    background-color: $clr-secondary-2;
+    color: $clr-secondary-8;
+    width: 100%;
+    max-width: 50rem;
+    padding: 2rem 1rem;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    border: 2px solid $clr-secondary-8;
+    border-radius: $border-radius;
 }

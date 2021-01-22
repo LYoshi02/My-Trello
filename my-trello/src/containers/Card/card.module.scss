@@ -2,6 +2,10 @@
 
 .Card {
     padding: 2rem 4rem;
+
+    @media only screen and(max-width: $bp-small) {
+        padding: 2rem 1rem;
+    }
 }
 
 .CardHeader {
@@ -12,6 +16,12 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     column-gap: 6rem;
+
+    @media only screen and(max-width: $bp-medium) {
+        grid-template-columns: none;
+        grid-template-rows: 1fr 2fr;
+        row-gap: 4rem;
+    }
 }
 
 .MainContent {

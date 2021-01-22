@@ -9,8 +9,13 @@ const Delete = ({ isModalOpen, onCloseModal, onDeleteCard }) => {
     modal = (
       <CardModal close={onCloseModal}>
         <h2>Eliminar tarjeta</h2>
-        <p>¿Estas seguro que quieres eliminar esta tarjeta?</p>
-        <Button type="button" clicked={onDeleteCard}>
+        <p>¿Estás seguro de que quieres eliminar esta tarjeta?</p>
+        <Button
+          variant="contained"
+          color="secondary"
+          type="button"
+          clicked={onDeleteCard}
+        >
           Eliminar
         </Button>
       </CardModal>

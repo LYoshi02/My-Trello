@@ -2,7 +2,7 @@ import React from "react";
 
 import classes from "./button.module.scss";
 
-const Button = ({ type, clicked, children, variant, color }) => {
+const Button = ({ type, clicked, children, variant, color, btnDisabled }) => {
   const btnClasses = [classes.Button];
 
   if (variant === "contained" && color === "primary") {
@@ -16,7 +16,12 @@ const Button = ({ type, clicked, children, variant, color }) => {
   }
 
   return (
-    <button type={type} onClick={clicked} className={btnClasses.join(" ")}>
+    <button
+      disabled={btnDisabled}
+      type={type}
+      onClick={clicked}
+      className={btnClasses.join(" ")}
+    >
       {children}
     </button>
   );

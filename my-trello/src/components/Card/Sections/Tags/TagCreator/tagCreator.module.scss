@@ -23,6 +23,14 @@
     }
 }
 
+.ColorsWrapper {
+    margin-top: 2rem;
+
+    p {
+        font-size: 1.6rem;
+    }
+}
+
 .Colors {
     display: grid;
     grid-template-columns: repeat( auto-fit, minmax(5rem, 1fr));
@@ -50,5 +58,26 @@
 
 .ActionButtons {
     display: flex;
-    justify-content: space-between;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    margin-top: 2rem;
+
+    button {
+        margin-top: 0;
+        margin-left: 1rem;
+        width: 30%;
+    }
+
+    @media only screen and(max-width: $bp-medium) {
+        flex-direction: column;
+
+        button {
+            width: 100%;
+            margin-left: 0;
+        }
+
+        button:not(:last-child) {
+            margin-bottom: 1rem;
+        }
+    }
 }

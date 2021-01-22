@@ -1,0 +1,25 @@
+@import "../../../../../styles/variables";
+
+.FormGroup {
+    margin-top: 2rem;
+}
+
+.FileUpload {
+    label {
+        border-radius: $border-radius;
+        background-color: $clr-grey-3;
+        padding: 1rem 0;
+        text-align: center;
+        color: $clr-grey-10;
+        transition: $trn-short;
+    }
+
+    label:hover {
+        background-color: $clr-grey-4;
+        cursor: pointer;
+    }
+
+    input {
+        display: none;
+    }
+}

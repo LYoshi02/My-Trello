@@ -4,7 +4,7 @@ import Navbar from "./Navbar/navbar";
 const Layout = (props) => {
   return (
     <>
-      <Navbar />
+      <Navbar isAuth={props.isAuth} onLogout={props.logout} />
       {props.children}
     </>
   );

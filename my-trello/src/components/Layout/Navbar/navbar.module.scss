@@ -5,11 +5,28 @@
     padding: .5rem 2rem;
     background-color: $clr-primary-7;
     color: $clr-grey-1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.Link {
+    font-size: 1.6rem;
+    margin-right: 2rem;
+    color: $clr-grey-5!important;
+
+    &:hover {
+        color: white !important;
+    }
+}
+
+.ActiveLink {
+    color: white !important;
 }
 
 .Button {
     background-color: rgba($clr-grey-2, .3);
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -18,6 +35,7 @@
     height: 100%;
     transition: $trn-short;
     text-transform: capitalize;
+    margin-left: 1rem;
 
     svg {
         margin-right: .5rem;
@@ -25,5 +43,14 @@
 
     &:hover {
         background-color: rgba($clr-grey-2, .2);
+    }
+}
+
+.ButtonRed {
+    background-color: rgba($clr-secondary-3, .3);
+    color: $clr-grey-1;
+
+    &:hover {
+        background-color: rgba($clr-secondary-2, .2);
     }
 }

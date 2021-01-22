@@ -36,7 +36,12 @@ const TagSelector = ({
       <h2>Etiquetas</h2>
       <ul className={classes.Tags}>{tagElements}</ul>
       <div className={classes.Action}>
-        <Button type="button" clicked={setTagCreator}>
+        <Button
+          color="secondary"
+          variant="contained"
+          type="button"
+          clicked={setTagCreator}
+        >
           Crear etiqueta nueva
         </Button>
       </div>

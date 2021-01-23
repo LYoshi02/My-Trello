@@ -17,6 +17,10 @@ const boardSchema = new Schema({
     ref: "User",
     required: true,
   },
+  background: {
+    type: Object,
+    required: true,
+  },
 });
 
 module.exports = model("Board", boardSchema);

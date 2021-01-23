@@ -1,0 +1,14 @@
+@import "../../../styles/variables";
+
+.Alert {
+    background-color: $clr-secondary-2;
+    color: $clr-secondary-8;
+    width: 100%;
+    padding: 2rem 1rem;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    border: 2px solid $clr-secondary-8;
+    border-radius: $border-radius;
+}

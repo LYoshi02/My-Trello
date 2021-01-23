@@ -6,11 +6,19 @@ import Button from "../Button/button";
 import classes from "./actionButtons.module.scss";
 
 const ActionButtons = (props) => {
-  const { btnType, btnColor, btnContent, cancelAction, primaryAction } = props;
+  const {
+    btnType,
+    btnColor,
+    btnContent,
+    cancelAction,
+    primaryAction,
+    disabled,
+  } = props;
 
   return (
     <div className={classes.ActionButtons}>
       <Button
+        btnDisabled={disabled}
         color={btnColor}
         variant="contained"
         type={btnType}

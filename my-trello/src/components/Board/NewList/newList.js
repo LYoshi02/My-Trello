@@ -3,6 +3,7 @@ import { IoAddOutline } from "react-icons/io5";
 
 import ActionButtons from "../../UI/ActionButtons/actionButtons";
 import Button from "../../UI/Button/button";
+import Spinner from "../../UI/Spinner/spinner";
 
 import classes from "./newList.module.scss";
 
@@ -13,6 +14,7 @@ const NewList = (props) => {
     newListName,
     newListNameChanged,
     createNewList,
+    reqListLoading,
   } = props;
 
   let newListContent = (
@@ -42,7 +44,8 @@ const NewList = (props) => {
         <ActionButtons
           btnType="submit"
           btnColor="secondary"
-          btnContent="Añadir lista"
+          btnContent={reqListLoading ? <Spinner /> : "Añadir lista"}
+          disabled={reqListLoading}
           cancelAction={toggleCreating}
         />
       </form>

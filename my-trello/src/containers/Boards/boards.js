@@ -4,14 +4,18 @@ import { IoPersonOutline } from "react-icons/io5";
 
 import axios from "../../axios-instance";
 import Modal from "../../components/Boards/Modal/modal";
+import Spinner from "../../components/UI/Spinner/spinner";
 
 import classes from "./boards.module.scss";
+import Button from "../../components/UI/Button/button";
 
 const Boards = ({ token }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [boardName, setBoardName] = useState("");
+  const [boardColor, setBoardColor] = useState("green");
   const [loadingBoards, setLoadingBoards] = useState(true);
   const [userBoards, setUserBoards] = useState(null);
+  const [reqLoading, setReqLoading] = useState(false);
 
   useEffect(() => {
     axios
@@ -33,69 +37,82 @@ const Boards = ({ token }) => {
 
   const createBoardHandler = (event) => {
     event.preventDefault();
+    const boardData = {
+      name: boardName,
+      background: {
+        type: "color",
+        content: boardColor,
+      },
+    };
+    setReqLoading(true);
+
     axios
-      .post(
-        "board",
-        {
-          name: boardName,
-        },
-        { headers: { Authorization: "Bearer " + token } }
-      )
+      .post("board", boardData, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         const boards = [...userBoards];
-        const { _id, name } = res.data.board;
-        boards.push({ _id, name });
+        const { _id, name, background } = res.data.board;
+        boards.push({ _id, name, background });
 
+        setReqLoading(false);
         setUserBoards(boards);
         toggleModal();
       })
       .catch((err) => {
+        setReqLoading(false);
         console.log(err);
       });
   };
 
-  let boards = null;
+  let boardElement = null;
   if (loadingBoards) {
-    boards = <span>Loading your boards...</span>;
-  } else if (userBoards && userBoards.length > 0) {
-    boards = userBoards.map((board) => (
-      <li key={board._id} className={classes.BoardItem}>
-        <Link to={`/board/${board._id}`}>{board.name}</Link>
-      </li>
-    ));
-  } else {
-    boards = <span>Not boards found</span>;
+    boardElement = <Spinner color="primary" />;
+  } else if (userBoards) {
+    boardElement = (
+      <div>
+        <div className={classes.BoardTitle}>
+          <h2>
+            <IoPersonOutline /> Tus Tableros
+          </h2>
+        </div>
+        <ul className={classes.Boards}>
+          {userBoards.map((board) => (
+            <li
+              key={board._id}
+              className={`${classes.BoardItem} color-${board.background.content}`}
+            >
+              <Link to={`/board/${board._id}`}>{board.name}</Link>
+            </li>
+          ))}
+          <li className={classes.CreateBoard} onClick={toggleModal}>
+            <p>Crear Tablero</p>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+
+  let modal = null;
+  if (isCreating) {
+    modal = (
+      <Modal
+        closeModal={toggleModal}
+        createBoard={createBoardHandler}
+        boardName={boardName}
+        boardColor={boardColor}
+        boardNameChanged={(event) => setBoardName(event.target.value)}
+        boardColorChanged={(color) => setBoardColor(color)}
+        loading={reqLoading}
+      />
+    );
   }
 
   return (
     <>
-      <div className={classes.BoardsContainer}>
-        {/* Board Sections */}
-        <div>
-          <div>
-            <div className={classes.BoardTitle}>
-              <p>
-                <IoPersonOutline /> Tableros Personales
-              </p>
-            </div>
-            <ul className={classes.Boards}>
-              {boards}
-              <li className={classes.CreateBoard} onClick={toggleModal}>
-                <p>Create Board</p>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <div className={classes.BoardsContainer}>{boardElement}</div>
 
-      {isCreating ? (
-        <Modal
-          closeModal={toggleModal}
-          createBoard={createBoardHandler}
-          boardName={boardName}
-          boardNameChanged={(event) => setBoardName(event.target.value)}
-        />
-      ) : null}
+      {modal}
     </>
   );
 };

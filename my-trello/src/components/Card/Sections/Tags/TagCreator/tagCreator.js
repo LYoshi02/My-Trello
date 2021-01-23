@@ -7,21 +7,9 @@ import {
 
 import Button from "../../../../UI/Button/button";
 import CardModal from "../../../Modal/modal";
+import { appColors } from "../../../../../util/board";
 
 import classes from "./tagCreator.module.scss";
-
-const tagColors = [
-  "green",
-  "yellow",
-  "orange",
-  "red",
-  "purple",
-  "blue",
-  "light-blue",
-  "aqua",
-  "pink",
-  "black",
-];
 
 const TagCreator = ({
   creating,
@@ -34,8 +22,8 @@ const TagCreator = ({
   tagAction,
   onDeleteTag,
 }) => {
-  const colorElements = tagColors.map((clr) => {
-    const clrClass = `tag-${clr}`;
+  const colorElements = appColors.map((clr) => {
+    const clrClass = `color-${clr}`;
     return (
       <span key={clr} className={clrClass} onClick={() => changeCardColor(clr)}>
         {cardColor === clr ? <IoCheckmarkSharp /> : ""}

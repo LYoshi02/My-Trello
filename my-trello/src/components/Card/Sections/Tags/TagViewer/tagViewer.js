@@ -5,7 +5,7 @@ import classes from "./tagViewer.module.scss";
 
 const TagViewer = ({ selectedTags, openModal }) => {
   let tagElements = selectedTags.map((st) => {
-    const clrClass = `tag-${st.color}`;
+    const clrClass = `color-${st.color}`;
     return (
       <span
         key={st._id}

@@ -9,7 +9,9 @@ const { validateBoardCreator } = require("../util/board");
 exports.getBoards = async (req, res, next) => {
   const userId = req.userId;
   try {
-    const boards = await Board.find({ creator: userId }).select("name");
+    const boards = await Board.find({ creator: userId }).select(
+      "name background"
+    );
 
     res.status(200).json({ boards: boards });
   } catch (err) {
@@ -31,10 +33,10 @@ exports.createBoard = async (req, res, next) => {
       throw error;
     }
 
-    const name = req.body.name;
+    const { name, background } = req.body;
     const userId = req.userId;
 
-    const board = new Board({ name: name, creator: userId });
+    const board = new Board({ name, background, creator: userId });
 
     const defaultLists = [
       { name: "Lista de Tareas", position: 1, cardIds: [] },

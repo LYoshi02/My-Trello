@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import axios from "../../axios-instance";
+import { IoArrowBackOutline } from "react-icons/io5";
 
 import Actions from "../../components/Card/Actions/actions";
+import Alert from "../../components/UI/Alert/alert";
 import Attachment from "./Attachment/attachment";
+import axios from "../../axios-instance";
+import Button from "../../components/UI/Button/button";
 import Checklist from "./Checklist/checklist";
 import Delete from "../../components/Card/Delete/delete";
 import Description from "./Description/description";
 import Name from "./Name/name";
+import Spinner from "../../components/UI/Spinner/spinner";
 import Tag from "./Tag/tag";
 import { updateObject } from "../../util/helpers";
 
@@ -16,6 +20,7 @@ import classes from "./card.module.scss";
 const Card = (props) => {
   const [cardData, setCardData] = useState(null);
   const [activeModal, setActiveModal] = useState("");
+  const [reqError, setReqError] = useState(null);
   let history = useHistory();
 
   const cardId = props.match.params.cardId;
@@ -30,7 +35,8 @@ const Card = (props) => {
         setCardData(res.data.card);
       })
       .catch((err) => {
-        console.log(err);
+        const message = err.response ? err.response.data.message : err.message;
+        setReqError(message);
       });
   }, [cardId, token]);
 
@@ -139,62 +145,77 @@ const Card = (props) => {
     setActiveModal(null);
   };
 
-  let mainCardContent = null,
-    nameCard = null;
-  if (cardData) {
-    nameCard = <Name name={cardData.name} inputSaveName={saveInput} />;
+  const backToBoard = () => {
+    history.replace(`/board/${cardData.boardId}`);
+  };
 
-    mainCardContent = (
-      <div className={classes.MainContent}>
-        <Tag
-          boardId={cardData.boardId}
-          selectedTags={cardData.selectedTags}
-          isModalOpen={activeModal === "tag"}
-          openModal={changeActiveModal}
-          closeModal={closeModalHandler}
-          onSaveSelectedTag={saveInput}
-          onDeleteSelectedTags={deleteSelectedTagsHandler}
-          onUpdateSelectedTags={updateSelectedTagsHandler}
-          token={token}
-        />
-        <Description
-          description={cardData.description}
-          inputSaveDescription={saveInput}
-        />
-        <Attachment
-          isModalOpen={activeModal === "attachment"}
-          fetchedAttachments={cardData.attachments}
-          onCloseModal={closeModalHandler}
-          onCreateAttachment={createAttachmentHandler}
-          onDeleteAttachment={deleteAttachmentHandler}
-          onEditAttachment={saveInput}
-        />
-        <Checklist
-          closeModal={closeModalHandler}
-          isModalOpen={activeModal === "checklist"}
-          fetchedChecklists={cardData.checklists}
-          updateChecklists={saveInput}
-        />
-        <Delete
-          isModalOpen={activeModal === "delete"}
-          onCloseModal={closeModalHandler}
-          onDeleteCard={deleteCardHandler}
-        />
-      </div>
+  let cardElement = <Spinner color="primary" />;
+  if (cardData) {
+    cardElement = (
+      <>
+        <div className={classes.CardButton}>
+          <Button
+            clicked={backToBoard}
+            variant="outlined"
+            color="secondary"
+            type="button"
+          >
+            <IoArrowBackOutline />
+            Volver al tablero
+          </Button>
+        </div>
+
+        <div className={classes.CardHeader}>
+          <Name name={cardData.name} inputSaveName={saveInput} />
+        </div>
+
+        <div className={classes.CardBody}>
+          <div className={classes.MainContent}>
+            <Tag
+              boardId={cardData.boardId}
+              selectedTags={cardData.selectedTags}
+              isModalOpen={activeModal === "tag"}
+              openModal={changeActiveModal}
+              closeModal={closeModalHandler}
+              onSaveSelectedTag={saveInput}
+              onDeleteSelectedTags={deleteSelectedTagsHandler}
+              onUpdateSelectedTags={updateSelectedTagsHandler}
+              token={token}
+            />
+            <Description
+              description={cardData.description}
+              inputSaveDescription={saveInput}
+            />
+            <Attachment
+              isModalOpen={activeModal === "attachment"}
+              fetchedAttachments={cardData.attachments}
+              onCloseModal={closeModalHandler}
+              onCreateAttachment={createAttachmentHandler}
+              onDeleteAttachment={deleteAttachmentHandler}
+              onEditAttachment={saveInput}
+            />
+            <Checklist
+              closeModal={closeModalHandler}
+              isModalOpen={activeModal === "checklist"}
+              fetchedChecklists={cardData.checklists}
+              updateChecklists={saveInput}
+            />
+            <Delete
+              isModalOpen={activeModal === "delete"}
+              onCloseModal={closeModalHandler}
+              onDeleteCard={deleteCardHandler}
+            />
+          </div>
+
+          <Actions toggleModal={changeActiveModal} />
+        </div>
+      </>
     );
+  } else if (reqError) {
+    cardElement = <Alert>{reqError}</Alert>;
   }
 
-  return (
-    <div className={classes.Card}>
-      <div className={classes.CardHeader}>{nameCard}</div>
-
-      <div className={classes.CardBody}>
-        {mainCardContent}
-
-        <Actions toggleModal={changeActiveModal} />
-      </div>
-    </div>
-  );
+  return <div className={classes.Card}>{cardElement}</div>;
 };
 
 export default Card;

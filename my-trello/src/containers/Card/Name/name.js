@@ -29,7 +29,12 @@ const Name = (props) => {
   };
 
   const saveName = () => {
-    inputSaveName(nameInput.elementKey, nameInput.value);
+    const newName = nameInput.value.trim();
+    if (newName !== "") {
+      inputSaveName(nameInput.elementKey, newName);
+    } else {
+      updateName(name);
+    }
   };
 
   return (

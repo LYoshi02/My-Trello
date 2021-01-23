@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "../../axios-instance";
 import { DragDropContext } from "react-beautiful-dnd";
 
+import Alert from "../../components/UI/Alert/alert";
 import List from "../../components/Board/List/list";
 import NewList from "../../components/Board/NewList/newList";
+import Spinner from "../../components/UI/Spinner/spinner";
 import { updateObject } from "../../util/helpers";
 import { isMovementEqual } from "../../util/board";
 
@@ -15,6 +17,9 @@ const Board = (props) => {
   const [columnCreateCard, setColumnCreateCard] = useState("");
   const [creatingList, setCreatingList] = useState(false);
   const [listName, setListName] = useState("");
+  const [reqCardLoading, setReqCardLoading] = useState(false);
+  const [reqNewListLoading, setReqNewListLoading] = useState(false);
+  const [reqError, setReqError] = useState(null);
 
   const { boardId } = props.match.params;
   const { token } = props;
@@ -28,7 +33,8 @@ const Board = (props) => {
         setUserLists(res.data.boardData.lists);
       })
       .catch((err) => {
-        console.log(err);
+        const message = err.response ? err.response.data.message : err.message;
+        setReqError(message);
       });
   }, [boardId, token]);
 
@@ -107,7 +113,11 @@ const Board = (props) => {
     setCreatingList((prevState) => !prevState);
   };
 
-  const createCardHandler = (listId) => {
+  const createCardHandler = (event, listId) => {
+    event.preventDefault();
+    if (cardName.trim() === "") return;
+
+    setReqCardLoading(true);
     axios
       .post(
         `board/${boardId}/list/${listId}`,
@@ -128,17 +138,22 @@ const Board = (props) => {
         const updatedLists = [...userLists];
         updatedLists.splice(updatedListIndex, 1, updatedList);
 
-        setUserLists(updatedLists);
+        setReqCardLoading(false);
         toggleCardCreator("");
+        setUserLists(updatedLists);
       })
       .catch((err) => {
-        console.log(err);
+        setReqCardLoading(false);
+        toggleCardCreator("");
       });
   };
 
   const createNewListHandler = (event) => {
     event.preventDefault();
 
+    if (listName.trim() === "") return;
+
+    setReqNewListLoading(true);
     axios
       .post(
         `board/${boardId}`,
@@ -148,76 +163,79 @@ const Board = (props) => {
         { headers: { Authorization: "Bearer " + token } }
       )
       .then((res) => {
+        setReqNewListLoading(false);
         setUserLists((prevState) => [...prevState, res.data.list]);
         toggleCreatingList();
+      })
+      .catch((err) => {
+        setReqNewListLoading(false);
+        console.log(err);
+      });
+  };
+
+  const editListNameHandler = (newListName, listId) => {
+    axios
+      .patch(
+        `board/${boardId}/list/${listId}`,
+        { name: newListName },
+        { headers: { Authorization: "Bearer " + token } }
+      )
+      .then((res) => {
+        console.log(res);
+        const updatedListIndex = userLists.findIndex(
+          (list) => list._id.toString() === listId
+        );
+        const updatedList = updateObject(userLists[updatedListIndex], {
+          name: res.data.list.name,
+        });
+        const updatedLists = [...userLists];
+        updatedLists.splice(updatedListIndex, 1, updatedList);
+        setUserLists(updatedLists);
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const editListNameHandler = (event, listId) => {
-    event.preventDefault();
-    const newListName = event.target.value.trim();
-
-    const changedList = userLists.find(
-      (list) => list._id.toString() === listId
-    );
-    if (newListName !== "" && newListName !== changedList.name) {
-      axios
-        .patch(
-          `board/${boardId}/list/${listId}`,
-          { name: newListName },
-          { headers: { Authorization: "Bearer " + token } }
-        )
-        .then((res) => {
-          console.log(res);
-          const updatedListIndex = userLists.findIndex(
-            (list) => list._id.toString() === listId
-          );
-          const updatedList = updateObject(userLists[updatedListIndex], {
-            name: res.data.list.name,
-          });
-          const updatedLists = [...userLists];
-          updatedLists.splice(updatedListIndex, 1, updatedList);
-          setUserLists(updatedLists);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+  const deleteListHandler = (listId) => {
+    console.log(listId);
   };
 
-  let lists = <p>Cargando</p>;
+  let boardElement = <Spinner color="primary" />;
   if (userLists && userLists.length > 0) {
-    lists = userLists.map((list) => (
-      <List
-        key={list._id}
-        listData={list}
-        columnCreateCard={columnCreateCard}
-        cardName={cardName}
-        cardNameChanged={(event) => setCardName(event.target.value)}
-        setCardCreator={(id) => toggleCardCreator(id)}
-        createCard={() => createCardHandler(list._id)}
-        editListName={(e) => editListNameHandler(e, list._id)}
-      />
-    ));
+    boardElement = (
+      <div className={classes.Board}>
+        {userLists.map((list) => (
+          <List
+            key={list._id}
+            listData={list}
+            isCreatingCard={columnCreateCard === list._id}
+            cardName={cardName}
+            cardNameChanged={(event) => setCardName(event.target.value)}
+            setCardCreator={(id) => toggleCardCreator(id)}
+            createCard={(event) => createCardHandler(event, list._id)}
+            editListName={(e) => editListNameHandler(e, list._id)}
+            reqCardLoading={reqCardLoading}
+            onDeleteList={() => deleteListHandler(list._id)}
+          />
+        ))}
+        <NewList
+          creating={creatingList}
+          toggleCreating={toggleCreatingList}
+          newListName={listName}
+          newListNameChanged={(event) => setListName(event.target.value)}
+          createNewList={createNewListHandler}
+          reqListLoading={reqNewListLoading}
+        />
+      </div>
+    );
+  } else if (reqError) {
+    boardElement = <Alert>{reqError}</Alert>;
   }
 
   return (
     <DragDropContext onDragEnd={dragEndHandler}>
-      <div className={classes.Container}>
-        <div className={classes.Board}>
-          {lists}
-          <NewList
-            creating={creatingList}
-            toggleCreating={toggleCreatingList}
-            newListName={listName}
-            newListNameChanged={(event) => setListName(event.target.value)}
-            createNewList={createNewListHandler}
-          />
-        </div>
-      </div>
+      <div className={classes.Container}>{boardElement}</div>
     </DragDropContext>
   );
 };

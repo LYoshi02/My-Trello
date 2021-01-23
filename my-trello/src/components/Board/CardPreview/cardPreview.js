@@ -13,7 +13,7 @@ const CardPreview = ({ provided, onOpenCard, cardData, isDragging }) => {
     cardTags = (
       <div className={classes.Tags}>
         {cardData.selectedTags.map((st) => {
-          const clrClass = `tag-${st.color}`;
+          const clrClass = `color-${st.color}`;
           return (
             <span
               key={st._id}
@@ -53,9 +53,24 @@ const CardPreview = ({ provided, onOpenCard, cardData, isDragging }) => {
     }
   }
 
+  let imgAttachment = null;
   let attachments = null;
   if (cardData.attachments && cardData.attachments.length > 0) {
     const totalItems = cardData.attachments.length;
+    const image = cardData.attachments.find(
+      (att) => att.type === "jpg" || att.type === "jpeg" || att.type === "png"
+    );
+
+    if (image) {
+      imgAttachment = (
+        <img
+          className={classes.Image}
+          src={`http://localhost:8080${image.url}`}
+          alt={image.name}
+        />
+      );
+    }
+
     attachments = (
       <span>
         <IoAttachOutline /> {totalItems}
@@ -81,15 +96,18 @@ const CardPreview = ({ provided, onOpenCard, cardData, isDragging }) => {
 
   return (
     <div
-      className={cardClasses.join(" ")}
+      className={classes.CardContainer}
+      onClick={onOpenCard}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
-      onClick={onOpenCard}
       ref={provided.innerRef}
     >
-      {cardTags}
-      <p>{cardData.name}</p>
-      {cardFooter}
+      {imgAttachment}
+      <div className={cardClasses.join(" ")}>
+        {cardTags}
+        <p>{cardData.name}</p>
+        {cardFooter}
+      </div>
     </div>
   );
 };

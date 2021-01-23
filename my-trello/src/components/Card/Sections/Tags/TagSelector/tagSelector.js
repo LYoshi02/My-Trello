@@ -16,7 +16,7 @@ const TagSelector = ({
   let tagElements = null;
   if (tags) {
     tagElements = tags.map((tag) => {
-      const clrClass = `tag-${tag.color}`;
+      const clrClass = `color-${tag.color}`;
       return (
         <li key={tag._id} className={classes.Tag}>
           <span className={clrClass} onClick={() => onSelectTag(tag._id)}>

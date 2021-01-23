@@ -10,7 +10,7 @@ import Login from "./containers/Auth/Login/login";
 import Signup from "./containers/Auth/Signup/signup";
 
 import "./App.scss";
-import "./styles/tag-colors.scss";
+import "./styles/app-colors.scss";
 
 function App() {
   const history = useHistory();
@@ -137,7 +137,7 @@ function App() {
           <Login onLogin={loginHandler} loading={reqLoading} error={reqError} />
         )}
       />
-      <Redirect to="/login" />
+      {/* <Redirect to="/login" /> */}
     </Switch>
   );
 

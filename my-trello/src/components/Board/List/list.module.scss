@@ -1,13 +1,30 @@
 @import "../../../styles/variables";
 
-.CardList {
+.List {
     min-width: 28rem;
     margin-right: 1rem;
     margin-bottom: 1rem;
     max-height: 100%;
 }
 
-.CardContent {
+.ListHeader {
+    display: flex;
+    align-items: center;
+
+    svg {
+        margin-left: 1rem;
+        font-size: 2.5rem;
+        color: $clr-secondary-5;
+        transition: $trn-short;
+        cursor: pointer;
+    }
+
+    svg:hover {
+        color: $clr-secondary-8;
+    }
+}
+
+.ListContent {
     background-color: $clr-grey-2;
     display: flex;
     flex-direction: column;
@@ -21,7 +38,7 @@
     margin-top: .5rem;
 }
 
-.CardAction {
+.ListAction {
     button {
         width: 100%;
     }

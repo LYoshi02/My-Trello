@@ -189,7 +189,7 @@ const Checklist = (props) => {
         creating={createItemId === cl._id}
         createItem={createItemHandler}
         checkItem={(itemId) => checkItemHandler(cl._id, itemId)}
-        changeListName={(e) => changeListNameHandler(cl._id, e.target.value)}
+        changeListName={(name) => changeListNameHandler(cl._id, name)}
         changeItemName={(itemId, itemName) =>
           changeItemNameHandler(itemId, itemName, cl._id)
         }

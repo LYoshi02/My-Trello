@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { IoCheckboxOutline, IoTrashOutline } from "react-icons/io5";
 
 import ActionButtons from "../../../../UI/ActionButtons/actionButtons";
@@ -8,45 +8,57 @@ import Item from "./Item/item";
 import TransparentInput from "../../../../UI/TransparentInput/transparentInput";
 
 import classes from "./checklist.module.scss";
+import { updateObject } from "../../../../../util/helpers";
 
-const ChecklistComponent = (props) => {
-  const {
-    data,
-    setCreator,
-    creating,
-    createItem,
-    checkItem,
-    changeListName,
-    changeItemName,
-    deleteChecklist,
-    deleteItem,
-  } = props;
-
-  const checklistNameInput = {
+const ChecklistComponent = ({
+  data,
+  setCreator,
+  creating,
+  createItem,
+  checkItem,
+  changeListName,
+  changeItemName,
+  deleteChecklist,
+  deleteItem,
+}) => {
+  const [listNameInput, setListNameInput] = useState({
     elementKey: "checklist",
-    elementType: "simple-input",
+    elementType: "input",
     elementConfig: {
       type: "text",
       required: true,
-    },
-    value: data.title,
-  };
-
-  const actionButtonInput = {
-    elementKey: "checklist-action",
-    elementType: "simple-input",
-    elementConfig: {
-      type: "text",
-      required: true,
-      autoFocus: true,
-      placeholder: "Añada un elemento",
     },
     value: "",
+  });
+
+  useEffect(() => {
+    setListNameInput(updateObject(listNameInput, { value: data.title }));
+  }, [data.title]);
+
+  const listNameChanged = (e) => {
+    setListNameInput(updateObject(listNameInput, { value: e.target.value }));
+  };
+
+  const listNameBlurred = () => {
+    const newListName = listNameInput.value.trim();
+    if (newListName !== "") {
+      changeListName(newListName);
+    } else {
+      setListNameInput(updateObject(listNameInput, { value: data.title }));
+    }
+  };
+
+  const checkItemName = (event) => {
+    const itemName = event.target.value.trim();
+    if (itemName === "") {
+      setCreator(null);
+    } else {
+      createItem(itemName);
+    }
   };
 
   let progressPercentage = 0;
   let checkElements = null;
-
   if (data.items.length > 0) {
     const itemsCompleted = data.items.filter((check) => check.completed).length;
     progressPercentage = parseInt((itemsCompleted / data.items.length) * 100);
@@ -62,19 +74,21 @@ const ChecklistComponent = (props) => {
       />
     ));
   }
-
-  const checkItemName = (event) => {
-    const itemName = event.target.value;
-    if (itemName.trim() === "") {
-      setCreator(null);
-    } else {
-      createItem(itemName);
-    }
-  };
-
   const progressBarStyles = {
     transform: `scaleX(${progressPercentage / 100})`,
     backgroundColor: progressPercentage < 100 ? "#f05454" : "#16c79a",
+  };
+
+  const actionButtonInput = {
+    elementKey: "checklist-action",
+    elementType: "simple-input",
+    elementConfig: {
+      type: "text",
+      required: true,
+      autoFocus: true,
+      placeholder: "Añada un elemento",
+    },
+    value: "",
   };
 
   let actionButton = (
@@ -109,8 +123,9 @@ const ChecklistComponent = (props) => {
       <CardHeading>
         <IoCheckboxOutline />
         <TransparentInput
-          inputData={checklistNameInput}
-          blurred={changeListName}
+          inputData={listNameInput}
+          inputChanged={listNameChanged}
+          blurred={listNameBlurred}
         />
         <button
           className={classes.DeleteButton}

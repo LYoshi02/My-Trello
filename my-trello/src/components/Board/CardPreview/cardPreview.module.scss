@@ -1,13 +1,16 @@
 @import "../../../styles/variables";
 
+.CardContainer {
+    border-radius: $border-radius;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
 .Card {
     background-color: $clr-grey-1;
     box-shadow: $light-shadow;
     padding: 1rem;
-    border-radius: $border-radius;
     font-size: 1.4rem;
-    margin-bottom: 1rem;
-    transition: $trn-short;
 
     span {
         display: inline-flex;
@@ -17,6 +20,13 @@
     &:hover {
         background-color: rgba($clr-grey-1, .6);
     }
+}
+
+.Image {
+    display: block;
+    width: 100%;
+    height: 15rem;
+    object-fit: cover;
 }
 
 .Tags {

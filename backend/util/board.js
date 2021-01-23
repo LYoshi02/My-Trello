@@ -5,10 +5,10 @@ exports.validateBoardCreator = async (boardId, userId) => {
   const board = await Board.findById(boardId);
 
   if (!board) {
-    error = new Error("Board not found");
+    error = new Error("Tablero no encontrado");
     error.statusCode = 404;
   } else if (board.creator.toString() !== userId) {
-    error = new Error("Not authorized");
+    error = new Error("No estás autorizado a acceder a este recurso");
     error.statusCode = 401;
   }
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import Alert from "../../../components/UI/Alert/alert";
 import Button from "../../../components/UI/Button/button";
 import { checkInputValidity, updateObject } from "../../../util/helpers";
 
@@ -125,12 +126,12 @@ const Signup = ({ onSignup, loading, error }) => {
 
   let errorMessage = null;
   if (error) {
-    errorMessage = <div className={classes.ErrorMessage}>{error}</div>;
+    errorMessage = <Alert>{error}</Alert>;
   }
 
   return (
     <div className={classes.Container}>
-      {errorMessage}
+      <div className={classes.ErrorMessage}>{errorMessage}</div>
       <div className={classes.Form}>
         <h2>Crear Cuenta</h2>
         <form onSubmit={submitFormHandler}>

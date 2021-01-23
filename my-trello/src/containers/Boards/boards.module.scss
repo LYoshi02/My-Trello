@@ -7,13 +7,14 @@
 }
 
 .BoardTitle {
-    p {
+    h2 {
         font-size: 2rem;
         display: flex;
         align-items: center;
         font-weight: bold;
         letter-spacing: $letter-spacing-sma;
         color: $clr-grey-10;
+        text-transform: capitalize;
     }
 
     svg {
@@ -52,7 +53,8 @@
 }
 
 .BoardItem {
-    background-color: $clr-secondary-6;
+    background-color: $clr-grey-8;
+    transition: $trn-short;
 
     a:link,
     a:visited {
@@ -64,6 +66,10 @@
         text-decoration: none;
         color: $clr-grey-1;
         font-weight: bold;
+    }
+
+    &:hover {
+        filter: brightness(95%);
     }
 }
 

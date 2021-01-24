@@ -18,6 +18,7 @@ const ChecklistModal = ({ close, submit, title, changed }) => {
             id="title"
             value={title}
             onChange={changed}
+            required
           />
         </div>
 

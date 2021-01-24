@@ -16,7 +16,6 @@ const Checklist = (props) => {
   const [checklists, setChecklists] = useState(null);
 
   useEffect(() => {
-    console.log(fetchedChecklists);
     setChecklists(fetchedChecklists);
   }, [fetchedChecklists]);
 
@@ -26,6 +25,7 @@ const Checklist = (props) => {
 
   const submitChecklist = (event) => {
     event.preventDefault();
+    if (titleInput.trim() === "") return;
     const newChecklist = { title: titleInput, items: [] };
     const updatedChecklists = [...checklists, newChecklist];
     updateChecklists("checklists", updatedChecklists);

@@ -97,6 +97,7 @@ const Tag = ({
   };
 
   const tagActionHandler = () => {
+    if (createCardColor === "") return;
     const newTag = { name: createCardName, color: createCardColor };
     let url = `/board/${boardId}/tags`;
     let method = "POST";

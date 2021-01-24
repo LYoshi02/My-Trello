@@ -5,6 +5,7 @@ const List = require("../models/list");
 const Card = require("../models/card");
 const Tag = require("../models/tag");
 const { validateBoardCreator } = require("../util/board");
+const { deleteFile } = require("../util/file");
 
 exports.getBoards = async (req, res, next) => {
   const userId = req.userId;
@@ -242,6 +243,46 @@ exports.updateLists = async (req, res, next) => {
     }
 
     res.status(200).json({ message: "Lists updated successfully" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.deleteList = async (req, res, next) => {
+  const boardId = req.params.boardId;
+  const listId = req.params.listId;
+  const userId = req.userId;
+
+  try {
+    const boardValidationError = await validateBoardCreator(boardId, userId);
+    if (boardValidationError) {
+      throw boardValidationError;
+    }
+
+    const list = await List.findOne({ _id: listId, boardId: boardId })
+      .populate("cardIds")
+      .exec();
+    if (!list) {
+      const error = new Error("Lista no encontrada");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    list.cardIds.forEach((card) => {
+      card.attachments.forEach((att) => {
+        if (att.type !== "link") {
+          deleteFile(att.url);
+        }
+      });
+    });
+
+    await Card.deleteMany({ _id: { $in: list.cardIds } });
+    await List.findByIdAndDelete(listId);
+
+    res.status(200).json({ message: "List deleted successfully" });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

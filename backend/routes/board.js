@@ -40,4 +40,10 @@ router.patch(
   boardController.updateListName
 );
 
+router.delete(
+  "/board/:boardId/list/:listId",
+  isAuth,
+  boardController.deleteList
+);
+
 module.exports = router;

@@ -3,7 +3,9 @@ import { IoAttachOutline } from "react-icons/io5";
 
 import AttachmentComponent from "../../../components/Card/Sections/Attachments/Attachment/attachment";
 import AttachmentsModal from "../../../components/Card/Sections/Attachments/AttachmentsModal/attachmentsModal";
+import Button from "../../../components/UI/Button/button";
 import CardHeading from "../../../components/Card/Heading/heading";
+import Modal from "../../../components/Card/Modal/modal";
 import { updateObject } from "../../../util/helpers";
 
 const Attachment = ({
@@ -19,34 +21,36 @@ const Attachment = ({
     url: "",
   });
   const [editingId, setEditingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const submitFormHandler = (event) => {
     event.preventDefault();
     if (!editingId) {
-      const newAttachment = {
-        ...linkData,
-        type: "link",
-      };
-      onCreateAttachment(newAttachment, "link");
+      if (linkData.url.trim() !== "") {
+        const newAttachment = {
+          ...linkData,
+          type: "link",
+        };
+        onCreateAttachment(newAttachment, "link");
+        closeModalHandler();
+      }
     } else {
       const updatedAttachments = [...fetchedAttachments];
       const changedAttachmentIndex = fetchedAttachments.findIndex(
         (att) => att._id === editingId
       );
+      const newName = linkData.name.trim();
 
-      if (
-        fetchedAttachments[changedAttachmentIndex].name !== linkData.name.trim()
-      ) {
+      if (fetchedAttachments[changedAttachmentIndex].name !== newName) {
         const updatedAttachment = updateObject(
           fetchedAttachments[changedAttachmentIndex],
-          { name: linkData.name }
+          { name: newName }
         );
         updatedAttachments.splice(changedAttachmentIndex, 1, updatedAttachment);
         onEditAttachment("attachments", updatedAttachments);
       }
+      closeModalHandler();
     }
-
-    closeModalHandler();
   };
 
   const fileUploadHandler = (event) => {
@@ -79,6 +83,11 @@ const Attachment = ({
     });
   };
 
+  const deleteAttachmentHandler = () => {
+    onDeleteAttachment(deletingId);
+    setDeletingId(null);
+  };
+
   let modal = null;
   if (isModalOpen || editingId) {
     modal = (
@@ -90,6 +99,24 @@ const Attachment = ({
         onFileUpload={fileUploadHandler}
         onInputChanged={linkInputChangedHandler}
       />
+    );
+  } else if (deletingId) {
+    modal = (
+      <Modal close={() => setDeletingId(null)}>
+        <h2>¿Desea eliminar el adjunto?</h2>
+        <p>
+          La operación de eliminar un adjunto es permanente. No es posible
+          deshacer la operación
+        </p>
+        <Button
+          clicked={deleteAttachmentHandler}
+          type="button"
+          variant="contained"
+          color="secondary"
+        >
+          Eliminar
+        </Button>
+      </Modal>
     );
   }
 
@@ -107,7 +134,7 @@ const Attachment = ({
             <AttachmentComponent
               key={item._id}
               data={item}
-              onDelete={onDeleteAttachment}
+              onDelete={(id) => setDeletingId(id)}
               onEdit={openEditorModal}
             />
           ))}

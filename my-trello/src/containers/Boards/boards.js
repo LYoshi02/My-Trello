@@ -37,6 +37,7 @@ const Boards = ({ token }) => {
 
   const createBoardHandler = (event) => {
     event.preventDefault();
+    if (boardName.trim() === "" || boardColor.trim() === "") return;
     const boardData = {
       name: boardName,
       background: {

@@ -3,7 +3,9 @@ import axios from "../../axios-instance";
 import { DragDropContext } from "react-beautiful-dnd";
 
 import Alert from "../../components/UI/Alert/alert";
+import Button from "../../components/UI/Button/button";
 import List from "../../components/Board/List/list";
+import Modal from "../../components/Card/Modal/modal";
 import NewList from "../../components/Board/NewList/newList";
 import Spinner from "../../components/UI/Spinner/spinner";
 import { updateObject } from "../../util/helpers";
@@ -20,6 +22,8 @@ const Board = (props) => {
   const [reqCardLoading, setReqCardLoading] = useState(false);
   const [reqNewListLoading, setReqNewListLoading] = useState(false);
   const [reqError, setReqError] = useState(null);
+  const [deleteListId, setDeleteListId] = useState(null);
+  const [reqDeleteLoading, setReqDeleteLoading] = useState(false);
 
   const { boardId } = props.match.params;
   const { token } = props;
@@ -197,8 +201,23 @@ const Board = (props) => {
       });
   };
 
-  const deleteListHandler = (listId) => {
-    console.log(listId);
+  const deleteListHandler = () => {
+    setReqDeleteLoading(true);
+    axios
+      .delete(`board/${boardId}/list/${deleteListId}`, {
+        headers: { Authorization: "Bearer " + token },
+      })
+      .then((res) => {
+        setReqDeleteLoading(false);
+        setUserLists((prevState) =>
+          prevState.filter((list) => list._id !== deleteListId)
+        );
+        setDeleteListId(null);
+      })
+      .catch((err) => {
+        setReqDeleteLoading(false);
+        setDeleteListId(null);
+      });
   };
 
   let boardElement = <Spinner color="primary" />;
@@ -216,7 +235,7 @@ const Board = (props) => {
             createCard={(event) => createCardHandler(event, list._id)}
             editListName={(e) => editListNameHandler(e, list._id)}
             reqCardLoading={reqCardLoading}
-            onDeleteList={() => deleteListHandler(list._id)}
+            onDeleteList={() => setDeleteListId(list._id)}
           />
         ))}
         <NewList
@@ -233,10 +252,32 @@ const Board = (props) => {
     boardElement = <Alert>{reqError}</Alert>;
   }
 
+  let deleteModal = null;
+  if (deleteListId) {
+    deleteModal = (
+      <Modal close={() => setDeleteListId(null)}>
+        <h2>¿Desea eliminar la lista?</h2>
+        <p>No es posible deshacer la operación</p>
+        <Button
+          type="button"
+          variant="contained"
+          btnDisabled={reqDeleteLoading}
+          color="secondary"
+          clicked={deleteListHandler}
+        >
+          {reqDeleteLoading ? <Spinner /> : "Eliminar"}
+        </Button>
+      </Modal>
+    );
+  }
+
   return (
-    <DragDropContext onDragEnd={dragEndHandler}>
-      <div className={classes.Container}>{boardElement}</div>
-    </DragDropContext>
+    <>
+      {deleteModal}
+      <DragDropContext onDragEnd={dragEndHandler}>
+        <div className={classes.Container}>{boardElement}</div>
+      </DragDropContext>
+    </>
   );
 };
 

@@ -34,6 +34,7 @@ const AttachmentsModal = ({
             id="link"
             value={inputData.url}
             onChange={(e) => onInputChanged(e.target.value, "url")}
+            required
           />
         </div>
       </>

@@ -28,6 +28,7 @@ const Modal = ({
               placeholder="Añadir título del tablero"
               value={boardName}
               onChange={boardNameChanged}
+              required
             />
             <IoCloseOutline onClick={closeModal} />
           </div>

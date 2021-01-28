@@ -28,7 +28,7 @@ const Navbar = ({ isAuth, onLogout }) => {
       <div>
         <Link to="/boards" className={classes.Button}>
           <IoGridOutline />
-          tableros
+          <span>tableros</span>
         </Link>
         <button
           type="button"
@@ -36,17 +36,19 @@ const Navbar = ({ isAuth, onLogout }) => {
           className={`${classes.Button} ${classes.ButtonRed}`}
         >
           <IoExitOutline />
-          Cerrar Sesión
+          <span>Cerrar Sesión</span>
         </button>
       </div>
     );
   }
 
   return (
-    <div className={classes.Navbar}>
-      <p>Logo</p>
+    <nav className={classes.Navbar}>
+      <h1>
+        <Link to="/">My Trello</Link>
+      </h1>
       {navItems}
-    </div>
+    </nav>
   );
 };
 

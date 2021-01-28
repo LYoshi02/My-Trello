@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth");
 const boardRoutes = require("./routes/board");
 const cardRoutes = require("./routes/card");
 const tagRoutes = require("./routes/tag");
+require("dotenv").config();
 
 const app = express();
 
@@ -37,16 +38,13 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(
-    "mongodb+srv://yoshi:kiNeAOg2V5oPvWxB@cluster0.z4xmb.mongodb.net/react-trello?retryWrites=true&w=majority",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
-    }
-  )
+  .connect(process.env.DEVELOPMENT_DB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  })
   .then((res) => {
-    app.listen(8080);
+    app.listen(process.env.PORT || 8080);
   })
   .catch((err) => console.log(err));

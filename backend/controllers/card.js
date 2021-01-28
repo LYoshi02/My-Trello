@@ -14,8 +14,11 @@ exports.getCard = async (req, res, next) => {
       .populate("checklists")
       .populate("selectedTags")
       .exec();
+
     if (!card) {
-      throw new Error("Card not found");
+      const error = new Error("Card not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const boardValidationError = await validateBoardCreator(
@@ -51,7 +54,9 @@ exports.updateCard = async (req, res, next) => {
 
     let card = await Card.findById(cardId);
     if (!card) {
-      throw new Error("Card not found");
+      const error = new Error("Card not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const boardValidationError = await validateBoardCreator(
@@ -84,7 +89,9 @@ exports.deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findById(cardId);
     if (!card) {
-      throw new Error("Card not found");
+      const error = new Error("Card not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const boardValidationError = await validateBoardCreator(
@@ -126,7 +133,9 @@ exports.createFileAttachment = async (req, res, next) => {
   try {
     const card = await Card.findById(cardId);
     if (!card) {
-      throw new Error("Card not found");
+      const error = new Error("Card not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const boardValidationError = await validateBoardCreator(
@@ -138,7 +147,9 @@ exports.createFileAttachment = async (req, res, next) => {
     }
 
     if (!attachedFile) {
-      throw new Error("No file appended");
+      const error = new Error("No file attached");
+      error.statusCode = 422;
+      throw error;
     }
 
     const fileName = attachedFile.originalname;
@@ -178,7 +189,9 @@ exports.createLinkAttachment = async (req, res, next) => {
 
     const card = await Card.findById(cardId);
     if (!card) {
-      throw new Error("Card not found");
+      const error = new Error("Card not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const boardValidationError = await validateBoardCreator(
@@ -210,7 +223,9 @@ exports.deleteAttachment = async (req, res, next) => {
   try {
     const card = await Card.findById(cardId);
     if (!card) {
-      throw new Error("Card not found");
+      const error = new Error("Card not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const boardValidationError = await validateBoardCreator(
@@ -226,7 +241,9 @@ exports.deleteAttachment = async (req, res, next) => {
     );
 
     if (!searchedAttachment) {
-      throw new Error("Requested file does not exist");
+      const error = new Error("Requested file not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     if (searchedAttachment.type !== "link") {

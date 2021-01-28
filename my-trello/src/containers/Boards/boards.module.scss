@@ -18,7 +18,7 @@
     }
 
     svg {
-        font-size:  3rem;
+        font-size: 3rem;
         margin-right: 1rem;
         color: $clr-grey-8;
     }
@@ -29,7 +29,7 @@
     list-style: none;
     display: flex;
     flex-wrap: wrap;
-    
+
     li {
         display: inline-block;
         border-radius: $border-radius;
@@ -66,6 +66,9 @@
         text-decoration: none;
         color: $clr-grey-1;
         font-weight: bold;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     &:hover {

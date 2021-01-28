@@ -15,6 +15,7 @@ import classes from "./board.module.scss";
 
 const Board = (props) => {
   const [userLists, setUserLists] = useState(null);
+  const [boardData, setBoardData] = useState(null);
   const [cardName, setCardName] = useState("");
   const [columnCreateCard, setColumnCreateCard] = useState("");
   const [creatingList, setCreatingList] = useState(false);
@@ -34,6 +35,7 @@ const Board = (props) => {
       })
       .then((res) => {
         console.log(res);
+        setBoardData(res.data.boardData.board);
         setUserLists(res.data.boardData.lists);
       })
       .catch((err) => {
@@ -221,32 +223,34 @@ const Board = (props) => {
   };
 
   let boardElement = <Spinner color="primary" />;
-  if (userLists && userLists.length > 0) {
+  if (boardData && userLists && userLists.length > 0) {
     boardElement = (
-      <div className={classes.Board}>
-        {userLists.map((list) => (
-          <List
-            key={list._id}
-            listData={list}
-            isCreatingCard={columnCreateCard === list._id}
-            cardName={cardName}
-            cardNameChanged={(event) => setCardName(event.target.value)}
-            setCardCreator={(id) => toggleCardCreator(id)}
-            createCard={(event) => createCardHandler(event, list._id)}
-            editListName={(e) => editListNameHandler(e, list._id)}
-            reqCardLoading={reqCardLoading}
-            onDeleteList={() => setDeleteListId(list._id)}
+      <DragDropContext onDragEnd={dragEndHandler}>
+        <div className={classes.Board}>
+          {userLists.map((list) => (
+            <List
+              key={list._id}
+              listData={list}
+              isCreatingCard={columnCreateCard === list._id}
+              cardName={cardName}
+              cardNameChanged={(event) => setCardName(event.target.value)}
+              setCardCreator={(id) => toggleCardCreator(id)}
+              createCard={(event) => createCardHandler(event, list._id)}
+              editListName={(e) => editListNameHandler(e, list._id)}
+              reqCardLoading={reqCardLoading}
+              onDeleteList={() => setDeleteListId(list._id)}
+            />
+          ))}
+          <NewList
+            creating={creatingList}
+            toggleCreating={toggleCreatingList}
+            newListName={listName}
+            newListNameChanged={(event) => setListName(event.target.value)}
+            createNewList={createNewListHandler}
+            reqListLoading={reqNewListLoading}
           />
-        ))}
-        <NewList
-          creating={creatingList}
-          toggleCreating={toggleCreatingList}
-          newListName={listName}
-          newListNameChanged={(event) => setListName(event.target.value)}
-          createNewList={createNewListHandler}
-          reqListLoading={reqNewListLoading}
-        />
-      </div>
+        </div>
+      </DragDropContext>
     );
   } else if (reqError) {
     boardElement = <Alert>{reqError}</Alert>;
@@ -274,9 +278,7 @@ const Board = (props) => {
   return (
     <>
       {deleteModal}
-      <DragDropContext onDragEnd={dragEndHandler}>
-        <div className={classes.Container}>{boardElement}</div>
-      </DragDropContext>
+      <div className={classes.Container}>{boardElement}</div>
     </>
   );
 };

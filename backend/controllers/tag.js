@@ -78,7 +78,9 @@ exports.updateTag = async (req, res, next) => {
     let tag = await Tag.findOne({ _id: tagId, boardId });
 
     if (!tag) {
-      throw new Error("Tag not found");
+      const error = new Error("Tag not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     tag = await Tag.findOneAndUpdate({ _id: tagId, boardId }, updatedTag, {
@@ -108,7 +110,9 @@ exports.deleteTag = async (req, res, next) => {
     const tag = await Tag.findOne({ boardId, _id: tagId });
 
     if (!tag) {
-      throw new Error("Tag not found");
+      const error = new Error("Tag not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     await Card.updateMany(

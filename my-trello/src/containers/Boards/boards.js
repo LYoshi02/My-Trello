@@ -7,7 +7,6 @@ import Modal from "../../components/Boards/Modal/modal";
 import Spinner from "../../components/UI/Spinner/spinner";
 
 import classes from "./boards.module.scss";
-import Button from "../../components/UI/Button/button";
 
 const Boards = ({ token }) => {
   const [isCreating, setIsCreating] = useState(false);

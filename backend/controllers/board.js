@@ -169,7 +169,9 @@ exports.updateListName = async (req, res, next) => {
     const changedList = await List.findOne({ _id: listId, boardId });
 
     if (!changedList) {
-      throw new Error("List not found");
+      const error = new Error("List not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     changedList.name = newName;

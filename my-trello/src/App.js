@@ -42,6 +42,11 @@ function App() {
     [logoutHandler]
   );
 
+  const logoutAction = () => {
+    logoutHandler();
+    history.push("/login");
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const expiryDate = localStorage.getItem("expiryDate");
@@ -137,7 +142,7 @@ function App() {
           <Login onLogin={loginHandler} loading={reqLoading} error={reqError} />
         )}
       />
-      {/* <Redirect to="/login" /> */}
+      <Redirect exact from="/" to="/login" />
     </Switch>
   );
 
@@ -162,8 +167,10 @@ function App() {
     );
   }
 
+  console.log(routes);
+
   return (
-    <Layout isAuth={authData.isAuth} logout={logoutHandler}>
+    <Layout isAuth={authData.isAuth} logout={logoutAction}>
       {routes}
     </Layout>
   );

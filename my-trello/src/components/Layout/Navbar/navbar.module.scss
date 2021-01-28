@@ -8,12 +8,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    h1 {
+        text-transform: uppercase;
+    }
+
+    @media only screen and(max-width: $bp-small) {
+        padding: .5rem 1rem;
+    }
 }
 
 .Link {
     font-size: 1.6rem;
-    margin-right: 2rem;
     color: $clr-grey-5!important;
+
+    &:not(:last-child) {
+        margin-right: 2rem;
+    }
 
     &:hover {
         color: white !important;
@@ -43,6 +54,19 @@
 
     &:hover {
         background-color: rgba($clr-grey-2, .2);
+    }
+
+    @media only screen and(max-width: $bp-small) {
+        padding: .5rem 1rem;
+        
+        span {
+            display: none;
+        }
+
+        svg {
+            margin-right: 0;
+            font-size: 2.5rem;
+        }
     }
 }
 

@@ -17,12 +17,13 @@ node_modules
 /frontend/build
 
 # misc
-/frontend/.DS_Store
-/frontend/.env.local
-/frontend/.env.development.local
-/frontend/.env.test.local
-/frontend/.env.production.local
+/my-trello/.DS_Store
+/my-trello/.env.local
+/my-trello/.env.development.local
+/my-trello/.env.test.local
+/my-trello/.env.production.local
 
-/frontend/npm-debug.log*
-/frontend/yarn-debug.log*
-/frontend/yarn-error.log*
+/my-trello/npm-debug.log*
+/my-trello/yarn-debug.log*
+/my-trello/yarn-error.log*
+/my-trello/.eslintcache

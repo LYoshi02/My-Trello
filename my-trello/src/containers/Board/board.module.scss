@@ -3,6 +3,8 @@
 .Container {
     height: calc(100% - 5rem);
     padding: 2rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .Board {
@@ -10,4 +12,29 @@
     height: 100%;
     width: 100%;
     overflow-x: auto;
+}
+
+.BoardName {
+    margin-bottom: 2rem;
+    font-size: 1.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-right: 1rem;
+    }
+
+    @media only screen and(max-width: $bp-small) {
+        flex-direction: column;
+        align-items: stretch;
+
+        h1 {
+            margin-bottom: 1.5rem;
+            margin-right: 0;
+        }
+    }
 }

@@ -155,6 +155,7 @@ function App() {
           render={() => <Boards token={authData.token} />}
         />
         <Route
+          exact
           path="/board/:boardId"
           render={(props) => <Board {...props} token={authData.token} />}
         />

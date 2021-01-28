@@ -100,6 +100,39 @@ exports.getBoard = async (req, res, next) => {
   }
 };
 
+exports.deleteBoard = async (req, res, next) => {
+  const boardId = req.params.boardId;
+  const userId = req.userId;
+
+  try {
+    const boardValidationError = await validateBoardCreator(boardId, userId);
+    if (boardValidationError) {
+      throw boardValidationError;
+    }
+
+    await Board.findByIdAndDelete(boardId);
+    await List.deleteMany({ boardId });
+
+    const cards = await Card.find({ boardId });
+    cards.forEach((card) => {
+      card.attachments.forEach((att) => {
+        if (att.type !== "link") {
+          deleteFile(att.url);
+        }
+      });
+    });
+    await Card.deleteMany({ boardId });
+    await Tag.deleteMany({ boardId });
+
+    res.status(200).json({ message: "Board deleted successfully" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.saveCard = async (req, res, next) => {
   const errors = validationResult(req);
 
@@ -162,7 +195,6 @@ exports.updateListName = async (req, res, next) => {
     if (boardValidationError) {
       throw boardValidationError;
     }
-    const board = await Board.findById(boardId);
 
     const listId = req.params.listId;
     const newName = req.body.name;

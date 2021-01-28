@@ -1,33 +1,31 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../axios-instance";
+import { useHistory } from "react-router-dom";
 import { DragDropContext } from "react-beautiful-dnd";
+import { IoTrashOutline } from "react-icons/io5";
 
+import axios from "../../axios-instance";
 import Alert from "../../components/UI/Alert/alert";
 import Button from "../../components/UI/Button/button";
-import List from "../../components/Board/List/list";
-import Modal from "../../components/Card/Modal/modal";
-import NewList from "../../components/Board/NewList/newList";
+import List from "./List/list";
+import NewList from "./NewList/newList";
 import Spinner from "../../components/UI/Spinner/spinner";
 import { updateObject } from "../../util/helpers";
 import { isMovementEqual } from "../../util/board";
 
 import classes from "./board.module.scss";
+import DeleteModal from "../../components/Board/DeleteModal/deleteModal";
 
 const Board = (props) => {
   const [userLists, setUserLists] = useState(null);
   const [boardData, setBoardData] = useState(null);
-  const [cardName, setCardName] = useState("");
-  const [columnCreateCard, setColumnCreateCard] = useState("");
-  const [creatingList, setCreatingList] = useState(false);
-  const [listName, setListName] = useState("");
-  const [reqCardLoading, setReqCardLoading] = useState(false);
-  const [reqNewListLoading, setReqNewListLoading] = useState(false);
   const [reqError, setReqError] = useState(null);
-  const [deleteListId, setDeleteListId] = useState(null);
+  const [isDeletingBoard, setIsDeleteingBoard] = useState(false);
   const [reqDeleteLoading, setReqDeleteLoading] = useState(false);
+  const history = useHistory();
 
   const { boardId } = props.match.params;
   const { token } = props;
+
   useEffect(() => {
     axios
       .get(`board/${boardId}`, {
@@ -89,11 +87,11 @@ const Board = (props) => {
       }
 
       setUserLists(updatedUserLists);
-      updateUserLists(changedLists);
+      updatedCardPositions(changedLists);
     }
   };
 
-  const updateUserLists = (updatedLists) => {
+  const updatedCardPositions = (updatedLists) => {
     axios
       .patch(
         `board/${boardId}/list`,
@@ -109,169 +107,94 @@ const Board = (props) => {
       });
   };
 
-  const toggleCardCreator = (listId) => {
-    setCardName("");
-    setColumnCreateCard(listId);
+  const toggleDeleteModal = () => {
+    setIsDeleteingBoard((prevState) => !prevState);
   };
 
-  const toggleCreatingList = () => {
-    setListName("");
-    setCreatingList((prevState) => !prevState);
-  };
-
-  const createCardHandler = (event, listId) => {
-    event.preventDefault();
-    if (cardName.trim() === "") return;
-
-    setReqCardLoading(true);
-    axios
-      .post(
-        `board/${boardId}/list/${listId}`,
-        { name: cardName },
-        { headers: { Authorization: "Bearer " + token } }
-      )
-      .then((res) => {
-        const updatedListIndex = userLists.findIndex(
-          (list) => list._id.toString() === listId
-        );
-        const updatedCards = [
-          ...userLists[updatedListIndex].cardIds,
-          res.data.card,
-        ];
-        const updatedList = updateObject(userLists[updatedListIndex], {
-          cardIds: updatedCards,
-        });
-        const updatedLists = [...userLists];
-        updatedLists.splice(updatedListIndex, 1, updatedList);
-
-        setReqCardLoading(false);
-        toggleCardCreator("");
-        setUserLists(updatedLists);
-      })
-      .catch((err) => {
-        setReqCardLoading(false);
-        toggleCardCreator("");
-      });
-  };
-
-  const createNewListHandler = (event) => {
-    event.preventDefault();
-
-    if (listName.trim() === "") return;
-
-    setReqNewListLoading(true);
-    axios
-      .post(
-        `board/${boardId}`,
-        {
-          name: listName,
-        },
-        { headers: { Authorization: "Bearer " + token } }
-      )
-      .then((res) => {
-        setReqNewListLoading(false);
-        setUserLists((prevState) => [...prevState, res.data.list]);
-        toggleCreatingList();
-      })
-      .catch((err) => {
-        setReqNewListLoading(false);
-        console.log(err);
-      });
-  };
-
-  const editListNameHandler = (newListName, listId) => {
-    axios
-      .patch(
-        `board/${boardId}/list/${listId}`,
-        { name: newListName },
-        { headers: { Authorization: "Bearer " + token } }
-      )
-      .then((res) => {
-        console.log(res);
-        const updatedListIndex = userLists.findIndex(
-          (list) => list._id.toString() === listId
-        );
-        const updatedList = updateObject(userLists[updatedListIndex], {
-          name: res.data.list.name,
-        });
-        const updatedLists = [...userLists];
-        updatedLists.splice(updatedListIndex, 1, updatedList);
-        setUserLists(updatedLists);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const deleteListHandler = () => {
+  const deleteBoardHandler = () => {
     setReqDeleteLoading(true);
     axios
-      .delete(`board/${boardId}/list/${deleteListId}`, {
+      .delete(`/board/${boardId}`, {
         headers: { Authorization: "Bearer " + token },
       })
-      .then((res) => {
+      .then(() => {
         setReqDeleteLoading(false);
-        setUserLists((prevState) =>
-          prevState.filter((list) => list._id !== deleteListId)
-        );
-        setDeleteListId(null);
+        history.push("/boards");
       })
       .catch((err) => {
         setReqDeleteLoading(false);
-        setDeleteListId(null);
+        console.log(err);
       });
+  };
+
+  const updateListsDataHandler = (listId, updatedList) => {
+    setUserLists((prevState) =>
+      prevState.map((list) => (list._id !== listId ? list : updatedList))
+    );
+  };
+
+  const addListHandler = (list) => {
+    setUserLists((prevState) => [...prevState, list]);
+  };
+
+  const deleteListHandler = (listId) => {
+    setUserLists((prevState) =>
+      prevState.filter((list) => list._id !== listId)
+    );
   };
 
   let boardElement = <Spinner color="primary" />;
   if (boardData && userLists && userLists.length > 0) {
     boardElement = (
-      <DragDropContext onDragEnd={dragEndHandler}>
-        <div className={classes.Board}>
-          {userLists.map((list) => (
-            <List
-              key={list._id}
-              listData={list}
-              isCreatingCard={columnCreateCard === list._id}
-              cardName={cardName}
-              cardNameChanged={(event) => setCardName(event.target.value)}
-              setCardCreator={(id) => toggleCardCreator(id)}
-              createCard={(event) => createCardHandler(event, list._id)}
-              editListName={(e) => editListNameHandler(e, list._id)}
-              reqCardLoading={reqCardLoading}
-              onDeleteList={() => setDeleteListId(list._id)}
-            />
-          ))}
-          <NewList
-            creating={creatingList}
-            toggleCreating={toggleCreatingList}
-            newListName={listName}
-            newListNameChanged={(event) => setListName(event.target.value)}
-            createNewList={createNewListHandler}
-            reqListLoading={reqNewListLoading}
-          />
+      <>
+        <div className={classes.BoardName}>
+          <h1>{boardData.name}</h1>
+
+          <Button
+            type="button"
+            variant="contained"
+            color="secondary"
+            clicked={toggleDeleteModal}
+          >
+            <IoTrashOutline />
+            Eliminar Tablero
+          </Button>
         </div>
-      </DragDropContext>
+        <DragDropContext onDragEnd={dragEndHandler}>
+          <div className={classes.Board}>
+            {userLists.map((list) => (
+              <List
+                key={list._id}
+                listData={list}
+                boardId={boardId}
+                token={token}
+                onUpdateListData={updateListsDataHandler}
+                onDeleteList={deleteListHandler}
+              />
+            ))}
+            <NewList
+              boardId={boardId}
+              token={token}
+              onAddNewList={addListHandler}
+            />
+          </div>
+        </DragDropContext>
+      </>
     );
   } else if (reqError) {
     boardElement = <Alert>{reqError}</Alert>;
   }
 
   let deleteModal = null;
-  if (deleteListId) {
+  if (isDeletingBoard) {
     deleteModal = (
-      <Modal close={() => setDeleteListId(null)}>
-        <h2>¿Desea eliminar la lista?</h2>
-        <p>No es posible deshacer la operación</p>
-        <Button
-          type="button"
-          variant="contained"
-          btnDisabled={reqDeleteLoading}
-          color="secondary"
-          clicked={deleteListHandler}
-        >
-          {reqDeleteLoading ? <Spinner /> : "Eliminar"}
-        </Button>
-      </Modal>
+      <DeleteModal
+        onClose={toggleDeleteModal}
+        title="¿Desea eliminar el tablero?"
+        btnText="Eliminar"
+        reqLoading={reqDeleteLoading}
+        onDelete={deleteBoardHandler}
+      />
     );
   }
 

@@ -24,6 +24,8 @@ router.post(
   boardController.createList
 );
 
+router.delete("/board/:boardId", isAuth, boardController.deleteBoard);
+
 router.patch("/board/:boardId/list", isAuth, boardController.updateLists);
 
 router.post(

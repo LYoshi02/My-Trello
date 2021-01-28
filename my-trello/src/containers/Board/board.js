@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { DragDropContext } from "react-beautiful-dnd";
 import { IoTrashOutline } from "react-icons/io5";
@@ -14,6 +14,7 @@ import { isMovementEqual } from "../../util/board";
 
 import classes from "./board.module.scss";
 import DeleteModal from "../../components/Board/DeleteModal/deleteModal";
+import TransparentInput from "../../components/UI/TransparentInput/transparentInput";
 
 const Board = (props) => {
   const [userLists, setUserLists] = useState(null);
@@ -21,10 +22,26 @@ const Board = (props) => {
   const [reqError, setReqError] = useState(null);
   const [isDeletingBoard, setIsDeleteingBoard] = useState(false);
   const [reqDeleteLoading, setReqDeleteLoading] = useState(false);
+  const [boardNameInput, setBoardNameInput] = useState({
+    elementType: "input",
+    elementConfig: {
+      type: "text",
+    },
+    value: "",
+  });
   const history = useHistory();
 
   const { boardId } = props.match.params;
   const { token } = props;
+
+  const changeBoardName = useCallback(
+    (value) => {
+      setBoardNameInput((prevState) => {
+        return updateObject(prevState, { value });
+      });
+    },
+    [setBoardNameInput]
+  );
 
   useEffect(() => {
     axios
@@ -35,12 +52,13 @@ const Board = (props) => {
         console.log(res);
         setBoardData(res.data.boardData.board);
         setUserLists(res.data.boardData.lists);
+        changeBoardName(res.data.boardData.board.name);
       })
       .catch((err) => {
         const message = err.response ? err.response.data.message : err.message;
         setReqError(message);
       });
-  }, [boardId, token]);
+  }, [boardId, token, changeBoardName, setUserLists, setBoardData]);
 
   const dragEndHandler = (result) => {
     if (!result.destination || !result.source) return;
@@ -111,6 +129,31 @@ const Board = (props) => {
     setIsDeleteingBoard((prevState) => !prevState);
   };
 
+  const updateBoardName = () => {
+    const name = boardNameInput.value.trim();
+
+    if (name.length === 0 || name === boardData.name) {
+      changeBoardName(boardData.name);
+    } else {
+      const newBoard = updateObject(boardData, { name });
+      axios
+        .put(
+          `/board/${boardId}`,
+          { board: newBoard },
+          {
+            headers: { Authorization: "Bearer " + token },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          setBoardData(res.data.board);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   const deleteBoardHandler = () => {
     setReqDeleteLoading(true);
     axios
@@ -148,7 +191,11 @@ const Board = (props) => {
     boardElement = (
       <>
         <div className={classes.BoardName}>
-          <h1>{boardData.name}</h1>
+          <TransparentInput
+            inputData={boardNameInput}
+            inputChanged={(e) => changeBoardName(e.target.value)}
+            blurred={updateBoardName}
+          />
 
           <Button
             type="button"

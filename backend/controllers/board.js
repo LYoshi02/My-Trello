@@ -100,6 +100,37 @@ exports.getBoard = async (req, res, next) => {
   }
 };
 
+exports.updateBoard = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  try {
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation failed");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const boardId = req.params.boardId;
+    const userId = req.userId;
+    const boardValidationError = await validateBoardCreator(boardId, userId);
+    if (boardValidationError) {
+      throw boardValidationError;
+    }
+    const updatedBoard = req.body.board;
+    const result = await Board.findByIdAndUpdate(boardId, updatedBoard, {
+      new: true,
+    });
+
+    res.status(200).json({ board: result });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.deleteBoard = async (req, res, next) => {
   const boardId = req.params.boardId;
   const userId = req.userId;

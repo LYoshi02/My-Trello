@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { IoJournalOutline } from "react-icons/io5";
 
 import CardHeading from "../../../components/Card/Heading/heading";
@@ -17,16 +17,18 @@ const Name = (props) => {
     value: "",
   });
 
+  const updateName = useCallback(
+    (newName) => {
+      setNameInput((prevState) => {
+        return updateObject(prevState, { value: newName });
+      });
+    },
+    [setNameInput]
+  );
+
   useEffect(() => {
     updateName(name);
-  }, [name]);
-
-  const updateName = (newName) => {
-    const updatedNameInput = updateObject(nameInput, {
-      value: newName,
-    });
-    setNameInput(updatedNameInput);
-  };
+  }, [name, updateName]);
 
   const saveName = () => {
     const newName = nameInput.value.trim();

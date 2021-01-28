@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { IoAddSharp, IoTrashOutline } from "react-icons/io5";
 import { Draggable, Droppable } from "react-beautiful-dnd";
@@ -29,9 +29,18 @@ const List = ({ listData, boardId, token, onUpdateListData, onDeleteList }) => {
   });
   const history = useHistory();
 
+  const changeListName = useCallback(
+    (value) => {
+      setListInput((prevState) => {
+        return updateObject(prevState, { value });
+      });
+    },
+    [setListInput]
+  );
+
   useEffect(() => {
-    setListName(listData.name);
-  }, [listData.name]);
+    changeListName(listData.name);
+  }, [listData.name, changeListName]);
 
   const openCard = (cardId) => {
     history.push(`/card/${cardId}`);
@@ -51,18 +60,14 @@ const List = ({ listData, boardId, token, onUpdateListData, onDeleteList }) => {
   };
 
   const listNameChanged = (event) => {
-    setListName(event.target.value);
-  };
-
-  const setListName = (value) => {
-    setListInput(updateObject(listInput, { value }));
+    changeListName(event.target.value);
   };
 
   const editNameHandler = () => {
     if (listInput.value !== "" && listInput.value !== listData.name) {
       editListName();
     } else {
-      setListName(listData.name);
+      changeListName(listData.name);
     }
   };
 

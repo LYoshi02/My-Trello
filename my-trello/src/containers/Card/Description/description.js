@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { IoMenuOutline } from "react-icons/io5";
 
 import CardHeading from "../../../components/Card/Heading/heading";
@@ -20,16 +20,18 @@ const Description = (props) => {
     value: "",
   });
 
+  const updateDescription = useCallback(
+    (newDescription) => {
+      setDescriptionInput((prevState) => {
+        return updateObject(prevState, { value: newDescription });
+      });
+    },
+    [setDescriptionInput]
+  );
+
   useEffect(() => {
     updateDescription(description);
-  }, [description]);
-
-  const updateDescription = (newDescription) => {
-    const updatedDescriptionInput = updateObject(descriptionInput, {
-      value: newDescription,
-    });
-    setDescriptionInput(updatedDescriptionInput);
-  };
+  }, [description, updateDescription]);
 
   const saveDescription = () => {
     if (descriptionInput.value.trim() !== "") {

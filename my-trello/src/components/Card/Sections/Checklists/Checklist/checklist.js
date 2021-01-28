@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { IoCheckboxOutline, IoTrashOutline } from "react-icons/io5";
 
 import ActionButtons from "../../../../UI/ActionButtons/actionButtons";
@@ -31,29 +31,38 @@ const ChecklistComponent = ({
     value: "",
   });
 
+  const listNameInputHandler = useCallback(
+    (value) => {
+      setListNameInput((prevState) => {
+        return updateObject(prevState, { value });
+      });
+    },
+    [setListNameInput]
+  );
+
   useEffect(() => {
-    setListNameInput(updateObject(listNameInput, { value: data.title }));
-  }, [data.title]);
+    listNameInputHandler(data.title);
+  }, [data.title, listNameInputHandler]);
 
   const listNameChanged = (e) => {
-    setListNameInput(updateObject(listNameInput, { value: e.target.value }));
+    listNameInputHandler(e.target.value);
   };
 
   const listNameBlurred = () => {
     const newListName = listNameInput.value.trim();
-    if (newListName !== "") {
+    if (newListName.length > 0) {
       changeListName(newListName);
     } else {
-      setListNameInput(updateObject(listNameInput, { value: data.title }));
+      listNameInputHandler(data.title);
     }
   };
 
   const checkItemName = (event) => {
     const itemName = event.target.value.trim();
-    if (itemName === "") {
-      setCreator(null);
-    } else {
+    if (itemName.length > 0) {
       createItem(itemName);
+    } else {
+      setCreator(null);
     }
   };
 

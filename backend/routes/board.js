@@ -24,6 +24,13 @@ router.post(
   boardController.createList
 );
 
+router.put(
+  "/board/:boardId",
+  isAuth,
+  [body("board.name", "The board name cannot be empty").trim().notEmpty()],
+  boardController.updateBoard
+);
+
 router.delete("/board/:boardId", isAuth, boardController.deleteBoard);
 
 router.patch("/board/:boardId/list", isAuth, boardController.updateLists);

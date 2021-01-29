@@ -78,7 +78,7 @@ const ChecklistComponent = ({
         completed={item.completed}
         name={item.name}
         check={() => checkItem(item._id)}
-        changeName={(e) => changeItemName(item._id, e.target.value)}
+        changeName={(newName) => changeItemName(item._id, newName)}
         deleteAction={() => deleteItem(item._id)}
       />
     ));

@@ -49,7 +49,6 @@ const Board = (props) => {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {
-        console.log(res);
         setBoardData(res.data.boardData.board);
         setUserLists(res.data.boardData.lists);
         changeBoardName(res.data.boardData.board.name);
@@ -118,7 +117,6 @@ const Board = (props) => {
       )
       .then((res) => {
         // TODO: hallar forma de hacer esto sin tener que esperar a la response
-        console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -145,7 +143,6 @@ const Board = (props) => {
           }
         )
         .then((res) => {
-          console.log(res);
           setBoardData(res.data.board);
         })
         .catch((err) => {

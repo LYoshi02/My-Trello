@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IoAttachOutline } from "react-icons/io5";
 
+import Alert from "../../../components/UI/Alert/alert";
 import AttachmentComponent from "../../../components/Card/Sections/Attachments/Attachment/attachment";
 import AttachmentsModal from "../../../components/Card/Sections/Attachments/AttachmentsModal/attachmentsModal";
 import Button from "../../../components/UI/Button/button";
@@ -15,6 +16,8 @@ const Attachment = ({
   onCreateAttachment,
   onDeleteAttachment,
   onEditAttachment,
+  reqError,
+  closeErrorAlert,
 }) => {
   const [linkData, setLinkData] = useState({
     name: "",
@@ -143,10 +146,20 @@ const Attachment = ({
     );
   }
 
+  let error = null;
+  if (reqError) {
+    error = (
+      <Alert type="error" floating onClose={closeErrorAlert}>
+        {reqError}
+      </Alert>
+    );
+  }
+
   return (
     <>
       {modal}
       {attachmentElements}
+      {error}
     </>
   );
 };

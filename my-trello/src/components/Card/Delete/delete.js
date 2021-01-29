@@ -1,8 +1,10 @@
 import React from "react";
+
 import Button from "../../UI/Button/button";
 import CardModal from "../Modal/modal";
+import Spinner from "../../UI/Spinner/spinner";
 
-const Delete = ({ isModalOpen, onCloseModal, onDeleteCard }) => {
+const Delete = ({ isModalOpen, onCloseModal, onDeleteCard, loading }) => {
   let modal = null;
 
   if (isModalOpen) {
@@ -15,8 +17,9 @@ const Delete = ({ isModalOpen, onCloseModal, onDeleteCard }) => {
           color="secondary"
           type="button"
           clicked={onDeleteCard}
+          btnDisabled={loading}
         >
-          Eliminar
+          {loading ? <Spinner /> : "Eliminar"}
         </Button>
       </CardModal>
     );

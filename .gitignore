@@ -4,24 +4,23 @@ node_modules
 
 # Backend Ignores
 /backend/uploaded/*
+/backend/nodemon.json
+/backend/.gitignore
 
 # Frontend Ignores
 # dependencies
-/frontend/.pnp
-/frontend/.pnp.js
+/my-trello/.pnp
+/my-trello/.pnp.js
 
 # testing
-/frontend/coverage
+/my-trello/coverage
 
 # production
-/frontend/build
+/my-trello/build
 
 # misc
 /my-trello/.DS_Store
-/my-trello/.env.local
-/my-trello/.env.development.local
-/my-trello/.env.test.local
-/my-trello/.env.production.local
+/my-trello/.env*
 
 /my-trello/npm-debug.log*
 /my-trello/yarn-debug.log*

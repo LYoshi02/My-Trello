@@ -20,7 +20,6 @@ const Boards = ({ token }) => {
     axios
       .get("boards", { headers: { Authorization: "Bearer " + token } })
       .then((res) => {
-        console.log(res);
         setLoadingBoards(false);
         setUserBoards(res.data.boards);
       })

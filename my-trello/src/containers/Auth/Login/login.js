@@ -112,7 +112,7 @@ const Login = ({ onLogin, loading, error }) => {
 
   let errorMessage = null;
   if (error) {
-    errorMessage = <Alert>{error}</Alert>;
+    errorMessage = <Alert type="error">{error}</Alert>;
   }
 
   return (

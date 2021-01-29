@@ -79,7 +79,6 @@ const List = ({ listData, boardId, token, onUpdateListData, onDeleteList }) => {
         { headers: { Authorization: "Bearer " + token } }
       )
       .then((res) => {
-        console.log(res);
         const updatedList = updateObject(listData, { name: listInput.value });
         onUpdateListData(listData._id, updatedList);
       })

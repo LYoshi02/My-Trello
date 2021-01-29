@@ -155,9 +155,10 @@ exports.createFileAttachment = async (req, res, next) => {
     const fileName = attachedFile.originalname;
     const fileNameArray = attachedFile.originalname.split(".");
     const extension = fileNameArray[fileNameArray.length - 1];
+    const filePath = attachedFile.path.replace("\\", "/");
     const newAttachment = {
       name: fileName,
-      url: "\\" + attachedFile.path,
+      url: filePath,
       type: extension,
     };
 

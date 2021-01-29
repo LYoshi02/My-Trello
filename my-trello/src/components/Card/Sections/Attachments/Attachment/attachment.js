@@ -5,12 +5,13 @@ import classes from "./attachment.module.scss";
 const AttachmentComponent = ({ data, onDelete, onEdit }) => {
   let url = data.url;
   if (data.type !== "link") {
-    url = "http://localhost:8080" + data.url;
+    url = process.env.REACT_APP_BACKEND_URL + data.url;
   }
 
   const isImage =
     data.type === "jpg" || data.type === "jpeg" || data.type === "png";
 
+  console.log(url);
   return (
     <div
       className={classes.Thumbnail}

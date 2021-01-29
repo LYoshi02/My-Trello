@@ -7,6 +7,7 @@ import {
 
 import Button from "../../../../UI/Button/button";
 import CardModal from "../../../Modal/modal";
+import Spinner from "../../../../UI/Spinner/spinner";
 import { appColors } from "../../../../../util/board";
 
 import classes from "./tagCreator.module.scss";
@@ -21,6 +22,7 @@ const TagCreator = ({
   changeCardColor,
   tagAction,
   onDeleteTag,
+  loading,
 }) => {
   const colorElements = appColors.map((clr) => {
     const clrClass = `color-${clr}`;
@@ -30,6 +32,42 @@ const TagCreator = ({
       </span>
     );
   });
+
+  let actionButtons = (
+    <Button
+      color="secondary"
+      variant="contained"
+      type="button"
+      clicked={tagAction}
+      btnDisabled={loading}
+    >
+      Crear
+    </Button>
+  );
+  if (!creating) {
+    actionButtons = (
+      <>
+        <Button
+          color="secondary"
+          variant="contained"
+          type="button"
+          clicked={tagAction}
+          btnDisabled={loading}
+        >
+          Editar
+        </Button>
+        <Button
+          color="secondary"
+          variant="outlined"
+          type="button"
+          clicked={onDeleteTag}
+          btnDisabled={loading}
+        >
+          Eliminar
+        </Button>
+      </>
+    );
+  }
 
   return (
     <CardModal close={exitModals}>
@@ -55,24 +93,7 @@ const TagCreator = ({
       </div>
 
       <div className={classes.ActionButtons}>
-        <Button
-          color="secondary"
-          variant="contained"
-          type="button"
-          clicked={tagAction}
-        >
-          {creating ? "Crear" : "Editar"}
-        </Button>
-        {!creating && (
-          <Button
-            color="secondary"
-            variant="outlined"
-            type="button"
-            clicked={onDeleteTag}
-          >
-            Eliminar
-          </Button>
-        )}
+        {loading ? <Spinner color="primary" /> : actionButtons}
       </div>
     </CardModal>
   );

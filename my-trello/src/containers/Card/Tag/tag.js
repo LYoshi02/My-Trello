@@ -20,6 +20,7 @@ const Tag = ({
   const [editingId, setEditingId] = useState(null);
   const [createCardName, setCreateCardName] = useState("");
   const [createCardColor, setCreateCardColor] = useState("");
+  const [reqLoading, setReqLoading] = useState(false);
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
@@ -28,7 +29,6 @@ const Tag = ({
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {
-        console.log(res);
         setTags(res.data.tags);
       })
       .catch((err) => {
@@ -93,7 +93,7 @@ const Tag = ({
       updatedSelectedTags.push(selectedTag);
     }
 
-    onSaveSelectedTag("selectedTags", updatedSelectedTags);
+    onSaveSelectedTag(updatedSelectedTags);
   };
 
   const tagActionHandler = () => {
@@ -106,6 +106,7 @@ const Tag = ({
       method = "PATCH";
     }
 
+    setReqLoading(true);
     axios({
       url,
       method,
@@ -124,16 +125,19 @@ const Tag = ({
           setTags(updatedTags);
           onUpdateSelectedTags(res.data.tag);
         }
+        setReqLoading(false);
         closeCreatorModal();
         setCreateCardName("");
         setCreateCardColor("");
       })
       .catch((err) => {
+        setReqLoading(false);
         console.log(err);
       });
   };
 
   const deleteTagHandler = () => {
+    setReqLoading(true);
     axios
       .delete(`/board/${boardId}/tags/${editingId}`, {
         headers: { Authorization: "Bearer " + token },
@@ -143,9 +147,11 @@ const Tag = ({
         setTags((prevState) =>
           prevState.filter((tag) => tag._id.toString() !== res.data.deletedId)
         );
+        setReqLoading(false);
         closeCreatorModal();
       })
       .catch((err) => {
+        setReqLoading(false);
         console.log(err);
       });
   };
@@ -163,6 +169,7 @@ const Tag = ({
         exitModals={closeAllModals}
         tagAction={tagActionHandler}
         onDeleteTag={deleteTagHandler}
+        loading={reqLoading}
       />
     );
   } else if (isModalOpen) {

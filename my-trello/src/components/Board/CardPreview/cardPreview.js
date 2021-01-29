@@ -65,7 +65,7 @@ const CardPreview = ({ provided, onOpenCard, cardData, isDragging }) => {
       imgAttachment = (
         <img
           className={classes.Image}
-          src={`http://localhost:8080${image.url}`}
+          src={process.env.REACT_APP_BACKEND_URL + image.url}
           alt={image.name}
         />
       );

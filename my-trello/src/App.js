@@ -76,7 +76,6 @@ function App() {
     axios
       .post("auth/login", user)
       .then((res) => {
-        console.log(res);
         setAuthData({
           isAuth: true,
           token: res.data.token,
@@ -101,7 +100,6 @@ function App() {
           setReqError(null);
         }, 5000);
       });
-    console.log(user);
   };
 
   const signupHandler = (user) => {
@@ -167,8 +165,6 @@ function App() {
       </Switch>
     );
   }
-
-  console.log(routes);
 
   return (
     <Layout isAuth={authData.isAuth} logout={logoutAction}>

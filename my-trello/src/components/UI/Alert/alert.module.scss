@@ -1,14 +1,53 @@
 @import "../../../styles/variables";
 
 .Alert {
-    background-color: $clr-secondary-2;
-    color: $clr-secondary-8;
     width: 100%;
-    padding: 2rem 1rem;
-    text-align: center;
-    font-weight: bold;
+    padding: 1rem;
     font-size: 1.8rem;
     margin-bottom: 2rem;
-    border: 2px solid $clr-secondary-8;
+    border: 2px solid;
     border-radius: $border-radius;
+    display: flex;
+}
+
+.Floating {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+}
+
+.Error {
+    background-color: $clr-secondary-2;
+    color: $clr-secondary-8;
+    border-color: $clr-secondary-8;
+}
+
+.AlertMessage {
+    flex: 1;
+    h4 {
+        font-weight: bold;
+        margin-bottom: .5rem;
+    }
+
+    p {
+        font-size: 1.6rem;
+    }
+}
+
+.AlertIcon {
+    margin-right: 1rem;
+
+    svg {
+        font-size: 2.25rem;
+        color: $clr-secondary-7;
+    }
+}
+
+.AlertClose {
+    svg {
+        font-size: 2.25rem;
+        cursor: pointer;
+    }
 }

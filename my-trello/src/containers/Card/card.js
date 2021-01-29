@@ -21,6 +21,8 @@ const Card = (props) => {
   const [cardData, setCardData] = useState(null);
   const [activeModal, setActiveModal] = useState("");
   const [reqError, setReqError] = useState(null);
+  const [reqActionError, setReqActionError] = useState(null);
+  const [reqDeleteLoading, setReqDeleteLoading] = useState(false);
   let history = useHistory();
 
   const cardId = props.match.params.cardId;
@@ -31,7 +33,6 @@ const Card = (props) => {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {
-        console.log(res);
         setCardData(res.data.card);
       })
       .catch((err) => {
@@ -45,8 +46,6 @@ const Card = (props) => {
       const updatedCard = updateObject(cardData, {
         [inputName]: inputValue,
       });
-      // TODO: hallar forma de hacer esto sin tener que esperar a la response para añadir multiples etiquetas
-      // setCardData(updatedCard);
 
       axios
         .put(
@@ -57,8 +56,9 @@ const Card = (props) => {
           { headers: { Authorization: "Bearer " + token } }
         )
         .then((res) => {
-          console.log(res);
-          setCardData(res.data.card);
+          if (inputName !== "selectedTags") {
+            setCardData(res.data.card);
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -67,16 +67,28 @@ const Card = (props) => {
   };
 
   const deleteCardHandler = () => {
+    setReqDeleteLoading(true);
     axios
       .delete(`card/${cardId}`, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {
+        setReqDeleteLoading(false);
         history.replace(`/board/${res.data.card.boardId}`);
       })
       .catch((err) => {
+        setReqDeleteLoading(false);
         console.log(err);
       });
+  };
+
+  const saveSelectedTagHandler = (inputValue) => {
+    setCardData((prevState) => {
+      return updateObject(prevState, {
+        selectedTags: inputValue,
+      });
+    });
+    saveInput("selectedTags", inputValue);
   };
 
   const updateSelectedTagsHandler = (editedTag) => {
@@ -109,12 +121,29 @@ const Card = (props) => {
       url = `card/${cardId}/attach-file`;
     }
 
+    setReqActionError(null);
     axios
       .post(url, attachmentData, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {
-        console.log(res);
+        setCardData(res.data.card);
+      })
+      .catch((err) => {
+        const message = err.response ? err.response.data.message : err.message;
+        setReqActionError(message);
+        setTimeout(() => {
+          setReqActionError(null);
+        }, 4000);
+      });
+  };
+
+  const deleteAttachmentHandler = (attachmentId) => {
+    axios
+      .delete(`card/${cardId}/attachment/${attachmentId}`, {
+        headers: { Authorization: "Bearer " + token },
+      })
+      .then((res) => {
         setCardData(res.data.card);
       })
       .catch((err) => {
@@ -122,19 +151,8 @@ const Card = (props) => {
       });
   };
 
-  const deleteAttachmentHandler = (attachmentId) => {
-    console.log(attachmentId);
-    axios
-      .delete(`card/${cardId}/attachment/${attachmentId}`, {
-        headers: { Authorization: "Bearer " + token },
-      })
-      .then((res) => {
-        console.log(res);
-        setCardData(res.data.card);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const clearActionError = () => {
+    setReqActionError(null);
   };
 
   const changeActiveModal = (activeModal) => {
@@ -177,7 +195,7 @@ const Card = (props) => {
               isModalOpen={activeModal === "tag"}
               openModal={changeActiveModal}
               closeModal={closeModalHandler}
-              onSaveSelectedTag={saveInput}
+              onSaveSelectedTag={saveSelectedTagHandler}
               onDeleteSelectedTags={deleteSelectedTagsHandler}
               onUpdateSelectedTags={updateSelectedTagsHandler}
               token={token}
@@ -193,6 +211,8 @@ const Card = (props) => {
               onCreateAttachment={createAttachmentHandler}
               onDeleteAttachment={deleteAttachmentHandler}
               onEditAttachment={saveInput}
+              reqError={reqActionError}
+              closeErrorAlert={clearActionError}
             />
             <Checklist
               closeModal={closeModalHandler}
@@ -204,6 +224,7 @@ const Card = (props) => {
               isModalOpen={activeModal === "delete"}
               onCloseModal={closeModalHandler}
               onDeleteCard={deleteCardHandler}
+              loading={reqDeleteLoading}
             />
           </div>
 

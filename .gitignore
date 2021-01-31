@@ -17,6 +17,7 @@ node_modules
 
 # production
 /my-trello/build
+/my-trello/netlify.toml
 
 # misc
 /my-trello/.DS_Store

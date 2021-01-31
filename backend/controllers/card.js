@@ -1,8 +1,10 @@
 const { validationResult } = require("express-validator");
+const uuid = require("uuid");
 
 const Card = require("../models/card");
 const List = require("../models/list");
-const file = require("../util/file");
+const bucket = require("../firebaseStorage");
+const { deleteBucketFile } = require("../util/file");
 const { validateBoardCreator } = require("../util/board");
 
 exports.getCard = async (req, res, next) => {
@@ -109,9 +111,9 @@ exports.deleteCard = async (req, res, next) => {
     list.cardIds.pull(cardId);
     await list.save();
 
-    card.attachments.forEach((att) => {
+    card.attachments.forEach(async (att) => {
       if (att.type !== "link") {
-        file.deleteFile(att.url);
+        await deleteBucketFile(att.completeName);
       }
     });
 
@@ -125,9 +127,41 @@ exports.deleteCard = async (req, res, next) => {
   }
 };
 
+exports.uploadFile = async (req, res, next) => {
+  const filePath = `uploaded/${req.file.filename}`;
+  const downloadToken = uuid.v4();
+  const metadata = {
+    metadata: {
+      // This line is very important. It's to create a download token.
+      firebaseStorageDownloadTokens: downloadToken,
+    },
+    contentType: req.file.mimetype,
+    cacheControl: "public, max-age=31536000",
+  };
+
+  try {
+    // Uploads a local file to the bucket
+    await bucket.upload(filePath, {
+      // Support for HTTP requests made with `Accept-Encoding: gzip`
+      gzip: true,
+      metadata: metadata,
+    });
+
+    const fileUrl = `https://firebasestorage.googleapis.com/v0/b/${process.env.FIREBASE_STORAGE_BUCKET_NAME}/o/${req.file.filename}?alt=media&token=${downloadToken}`;
+    req.attachedFileUrl = fileUrl;
+    next();
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.createFileAttachment = async (req, res, next) => {
   const cardId = req.params.cardId;
-  const attachedFile = req.file;
+  const attachedFileData = req.file;
+  const attachedFileUrl = req.attachedFileUrl;
   const userId = req.userId;
 
   try {
@@ -146,19 +180,13 @@ exports.createFileAttachment = async (req, res, next) => {
       throw boardValidationError;
     }
 
-    if (!attachedFile) {
-      const error = new Error("No file attached");
-      error.statusCode = 422;
-      throw error;
-    }
-
-    const fileName = attachedFile.originalname;
-    const fileNameArray = attachedFile.originalname.split(".");
-    const extension = fileNameArray[fileNameArray.length - 1];
-    const filePath = attachedFile.path.replace("\\", "/");
+    const shortName = attachedFileData.originalname;
+    const shortNameArray = attachedFileData.originalname.split(".");
+    const extension = shortNameArray[shortNameArray.length - 1];
     const newAttachment = {
-      name: fileName,
-      url: filePath,
+      name: shortName,
+      completeName: attachedFileData.filename,
+      url: attachedFileUrl,
       type: extension,
     };
 
@@ -248,7 +276,7 @@ exports.deleteAttachment = async (req, res, next) => {
     }
 
     if (searchedAttachment.type !== "link") {
-      file.deleteFile(searchedAttachment.url);
+      await deleteBucketFile(searchedAttachment.completeName);
     }
 
     card.attachments.pull(attachmentId);

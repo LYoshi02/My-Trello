@@ -1,7 +1,7 @@
 @import "../../../../../styles/variables";
 
 .Thumbnail {
-    min-height: 12rem;
+    height: 12rem;
     display: flex;
     border-radius: $border-radius;
     transition: $trn-short;
@@ -44,6 +44,7 @@
         overflow: hidden;
         border-radius: $border-radius;
         object-fit: cover;
+        object-position: center;
     }
 }
 

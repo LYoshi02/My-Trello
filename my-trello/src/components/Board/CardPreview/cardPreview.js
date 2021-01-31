@@ -53,24 +53,9 @@ const CardPreview = ({ provided, onOpenCard, cardData, isDragging }) => {
     }
   }
 
-  let imgAttachment = null;
   let attachments = null;
   if (cardData.attachments && cardData.attachments.length > 0) {
     const totalItems = cardData.attachments.length;
-    const image = cardData.attachments.find(
-      (att) => att.type === "jpg" || att.type === "jpeg" || att.type === "png"
-    );
-
-    if (image) {
-      imgAttachment = (
-        <img
-          className={classes.Image}
-          src={process.env.REACT_APP_BACKEND_URL + image.url}
-          alt={image.name}
-        />
-      );
-    }
-
     attachments = (
       <span>
         <IoAttachOutline /> {totalItems}
@@ -102,7 +87,6 @@ const CardPreview = ({ provided, onOpenCard, cardData, isDragging }) => {
       {...provided.dragHandleProps}
       ref={provided.innerRef}
     >
-      {imgAttachment}
       <div className={cardClasses.join(" ")}>
         {cardTags}
         <p>{cardData.name}</p>

@@ -5,7 +5,7 @@ const List = require("../models/list");
 const Card = require("../models/card");
 const Tag = require("../models/tag");
 const { validateBoardCreator } = require("../util/board");
-const { deleteFile } = require("../util/file");
+const { deleteBucketFile } = require("../util/file");
 
 exports.getBoards = async (req, res, next) => {
   const userId = req.userId;
@@ -146,9 +146,9 @@ exports.deleteBoard = async (req, res, next) => {
 
     const cards = await Card.find({ boardId });
     cards.forEach((card) => {
-      card.attachments.forEach((att) => {
+      card.attachments.forEach(async (att) => {
         if (att.type !== "link") {
-          deleteFile(att.url);
+          await deleteBucketFile(att.completeName);
         }
       });
     });
@@ -337,9 +337,9 @@ exports.deleteList = async (req, res, next) => {
     }
 
     list.cardIds.forEach((card) => {
-      card.attachments.forEach((att) => {
+      card.attachments.forEach(async (att) => {
         if (att.type !== "link") {
-          deleteFile(att.url);
+          await deleteBucketFile(att.completeName);
         }
       });
     });

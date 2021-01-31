@@ -8,6 +8,12 @@ const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
 
+// const fileStorage = multer.memoryStorage({
+//   destination: function (req, file, callback) {
+//     callback(null, "");
+//   },
+// });
+
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploaded");
@@ -37,6 +43,7 @@ router.post(
   "/card/:cardId/attach-file",
   isAuth,
   upload.single("attachedFile"),
+  cardController.uploadFile,
   cardController.createFileAttachment
 );
 

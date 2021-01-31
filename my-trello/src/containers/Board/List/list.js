@@ -196,20 +196,20 @@ const List = ({ listData, boardId, token, onUpdateListData, onDeleteList }) => {
             <IoTrashOutline onClick={toggleDeleteModal} />
           </div>
 
-          <div className={classes.Cards}>
-            <Droppable droppableId={listData._id}>
-              {(provided) => (
-                <div
-                  className={classes.Cards}
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
+          <Droppable droppableId={listData._id}>
+            {(provided) => (
+              <div
+                className={classes.Cards}
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                <div>
                   {listCards}
                   {provided.placeholder}
                 </div>
-              )}
-            </Droppable>
-          </div>
+              </div>
+            )}
+          </Droppable>
 
           <div className={classes.ListAction}>{cardAction}</div>
         </div>

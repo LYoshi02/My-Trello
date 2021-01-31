@@ -54,6 +54,11 @@ const cardSchema = new Schema({
         trim: true,
         default: "",
       },
+      completeName: {
+        type: String,
+        trim: true,
+        default: "",
+      },
       url: {
         type: String,
         required: true,

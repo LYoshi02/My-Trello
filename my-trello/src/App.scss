@@ -16,9 +16,9 @@ html {
         font-size: 56.25%;
     }
 
-    @media only screen and (max-width: $bp-small) {
-        font-size: 50%;
-    }
+    // @media only screen and (max-width: $bp-small) {
+    //     font-size: 50%;
+    // }
 }
 
 body {
@@ -41,6 +41,7 @@ label {
 button {
     border: none;
     font-family: $ff-primary;
+    background: none;
 
     &:hover {
         cursor: pointer;

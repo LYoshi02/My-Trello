@@ -20,6 +20,7 @@ function App() {
     isAuth: false,
     token: null,
     userId: null,
+    redirect: false,
   });
 
   const logoutHandler = useCallback(() => {
@@ -30,6 +31,7 @@ function App() {
       isAuth: false,
       token: null,
       userId: null,
+      redirect: true,
     });
   }, []);
 
@@ -51,6 +53,9 @@ function App() {
     const token = localStorage.getItem("token");
     const expiryDate = localStorage.getItem("expiryDate");
     if (!token || !expiryDate) {
+      setAuthData((prevState) => {
+        return { ...prevState, redirect: true };
+      });
       return;
     }
     if (new Date(expiryDate) <= new Date()) {
@@ -65,6 +70,7 @@ function App() {
       isAuth: true,
       token,
       userId,
+      redirect: true,
     });
     setAutoLogout(remainingMilliseconds);
   }, [logoutHandler, setAutoLogout]);
@@ -80,6 +86,7 @@ function App() {
           isAuth: true,
           token: res.data.token,
           userId: res.data.userId,
+          redirect: true,
         });
         setReqLoading(false);
         localStorage.setItem("token", res.data.token);
@@ -93,8 +100,9 @@ function App() {
         history.push("/boards");
       })
       .catch((err) => {
+        const message = err.response ? err.response.data.message : err.message;
         setReqLoading(false);
-        setReqError(err.response.data.message);
+        setReqError(message);
 
         setTimeout(() => {
           setReqError(null);
@@ -113,8 +121,9 @@ function App() {
         history.push("/login");
       })
       .catch((err) => {
+        const message = err.response ? err.response.data.message : err.message;
         setReqLoading(false);
-        setReqError(err.response.data.message);
+        setReqError(message);
 
         setTimeout(() => {
           setReqError(null);
@@ -122,28 +131,7 @@ function App() {
       });
   };
 
-  let routes = (
-    <Switch>
-      <Route
-        path="/signup"
-        render={() => (
-          <Signup
-            onSignup={signupHandler}
-            loading={reqLoading}
-            error={reqError}
-          />
-        )}
-      />
-      <Route
-        path="/login"
-        render={() => (
-          <Login onLogin={loginHandler} loading={reqLoading} error={reqError} />
-        )}
-      />
-      <Redirect exact from="/" to="/login" />
-    </Switch>
-  );
-
+  let routes;
   if (authData.isAuth) {
     routes = (
       <Switch>
@@ -161,7 +149,33 @@ function App() {
           path="/card/:cardId"
           render={(props) => <Card {...props} token={authData.token} />}
         />
-        <Redirect to="/boards" />
+        {authData.redirect && <Redirect to="/boards" />}
+      </Switch>
+    );
+  } else {
+    routes = (
+      <Switch>
+        <Route
+          path="/signup"
+          render={() => (
+            <Signup
+              onSignup={signupHandler}
+              loading={reqLoading}
+              error={reqError}
+            />
+          )}
+        />
+        <Route
+          path="/login"
+          render={() => (
+            <Login
+              onLogin={loginHandler}
+              loading={reqLoading}
+              error={reqError}
+            />
+          )}
+        />
+        {authData.redirect && <Redirect to="/login" />}
       </Switch>
     );
   }

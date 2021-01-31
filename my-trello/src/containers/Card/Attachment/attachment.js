@@ -29,31 +29,32 @@ const Attachment = ({
   const submitFormHandler = (event) => {
     event.preventDefault();
     if (!editingId) {
-      if (linkData.url.trim() !== "") {
+      if (linkData.url.trim().length > 0) {
         const newAttachment = {
           ...linkData,
           type: "link",
         };
         onCreateAttachment(newAttachment, "link");
-        closeModalHandler();
       }
     } else {
-      const updatedAttachments = [...fetchedAttachments];
-      const changedAttachmentIndex = fetchedAttachments.findIndex(
+      const changedAttachment = fetchedAttachments.find(
         (att) => att._id === editingId
       );
       const newName = linkData.name.trim();
 
-      if (fetchedAttachments[changedAttachmentIndex].name !== newName) {
-        const updatedAttachment = updateObject(
-          fetchedAttachments[changedAttachmentIndex],
-          { name: newName }
+      if (newName.length > 0 && changedAttachment.name !== newName) {
+        const updatedAttachment = updateObject(changedAttachment, {
+          name: newName,
+        });
+        const updatedAttachments = fetchedAttachments.map((att) =>
+          att._id !== editingId ? att : updatedAttachment
         );
-        updatedAttachments.splice(changedAttachmentIndex, 1, updatedAttachment);
+
         onEditAttachment("attachments", updatedAttachments);
       }
-      closeModalHandler();
     }
+
+    closeModalHandler();
   };
 
   const fileUploadHandler = (event) => {

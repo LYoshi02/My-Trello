@@ -2,9 +2,11 @@ import React from "react";
 import { IoGridOutline, IoExitOutline } from "react-icons/io5";
 import { Link, NavLink } from "react-router-dom";
 
+import { useAuth } from "../../../contexts/AuthContext";
 import classes from "./navbar.module.scss";
 
-const Navbar = ({ isAuth, onLogout }) => {
+const Navbar = () => {
+  const { currentUser, logout } = useAuth();
   let navItems = (
     <div>
       <NavLink
@@ -23,7 +25,7 @@ const Navbar = ({ isAuth, onLogout }) => {
       </NavLink>
     </div>
   );
-  if (isAuth) {
+  if (currentUser) {
     navItems = (
       <div>
         <Link to="/boards" className={classes.Button}>
@@ -32,7 +34,7 @@ const Navbar = ({ isAuth, onLogout }) => {
         </Link>
         <button
           type="button"
-          onClick={onLogout}
+          onClick={logout}
           className={`${classes.Button} ${classes.ButtonRed}`}
         >
           <IoExitOutline />

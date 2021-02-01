@@ -1,190 +1,41 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Switch, Route, Redirect, useHistory } from "react-router-dom";
+import React from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
 
-import axios from "./axios-instance";
 import Board from "./containers/Board/board";
 import Boards from "./containers/Boards/boards";
 import Card from "./containers/Card/card";
 import Layout from "./components/Layout/layout";
 import Login from "./containers/Auth/Login/login";
 import Signup from "./containers/Auth/Signup/signup";
+import { useAuth } from "./contexts/AuthContext";
 
 import "./App.scss";
 import "./styles/app-colors.scss";
 
 function App() {
-  const history = useHistory();
-  const [reqLoading, setReqLoading] = useState(false);
-  const [reqError, setReqError] = useState(null);
-  const [authData, setAuthData] = useState({
-    isAuth: false,
-    token: null,
-    userId: null,
-    redirect: false,
-  });
-
-  const logoutHandler = useCallback(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("expiryDate");
-    setAuthData({
-      isAuth: false,
-      token: null,
-      userId: null,
-      redirect: true,
-    });
-  }, []);
-
-  const setAutoLogout = useCallback(
-    (milliseconds) => {
-      setTimeout(() => {
-        logoutHandler();
-      }, milliseconds);
-    },
-    [logoutHandler]
-  );
-
-  const logoutAction = () => {
-    logoutHandler();
-    history.push("/login");
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const expiryDate = localStorage.getItem("expiryDate");
-    if (!token || !expiryDate) {
-      setAuthData((prevState) => {
-        return { ...prevState, redirect: true };
-      });
-      return;
-    }
-    if (new Date(expiryDate) <= new Date()) {
-      logoutHandler();
-      return;
-    }
-
-    const userId = localStorage.getItem("userId");
-    const remainingMilliseconds =
-      new Date(expiryDate).getTime() - new Date().getTime();
-    setAuthData({
-      isAuth: true,
-      token,
-      userId,
-      redirect: true,
-    });
-    setAutoLogout(remainingMilliseconds);
-  }, [logoutHandler, setAutoLogout]);
-
-  const loginHandler = (user) => {
-    setReqLoading(true);
-    setReqError(null);
-
-    axios
-      .post("auth/login", user)
-      .then((res) => {
-        setAuthData({
-          isAuth: true,
-          token: res.data.token,
-          userId: res.data.userId,
-          redirect: true,
-        });
-        setReqLoading(false);
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("userId", res.data.userId);
-        const remainingMilliseconds = 60 * 60 * 24000;
-        const expiryDate = new Date(
-          new Date().getTime() + remainingMilliseconds
-        );
-        localStorage.setItem("expiryDate", expiryDate.toISOString());
-        setAutoLogout(remainingMilliseconds);
-        history.push("/boards");
-      })
-      .catch((err) => {
-        const message = err.response ? err.response.data.message : err.message;
-        setReqLoading(false);
-        setReqError(message);
-
-        setTimeout(() => {
-          setReqError(null);
-        }, 5000);
-      });
-  };
-
-  const signupHandler = (user) => {
-    setReqLoading(true);
-    setReqError(null);
-
-    axios
-      .put("auth/signup", user)
-      .then(() => {
-        setReqLoading(false);
-        history.push("/login");
-      })
-      .catch((err) => {
-        const message = err.response ? err.response.data.message : err.message;
-        setReqLoading(false);
-        setReqError(message);
-
-        setTimeout(() => {
-          setReqError(null);
-        }, 5000);
-      });
-  };
+  const { currentUser } = useAuth();
 
   let routes;
-  if (authData.isAuth) {
+  if (currentUser) {
     routes = (
       <Switch>
-        <Route
-          path="/boards"
-          exact
-          render={() => <Boards token={authData.token} />}
-        />
-        <Route
-          exact
-          path="/board/:boardId"
-          render={(props) => <Board {...props} token={authData.token} />}
-        />
-        <Route
-          path="/card/:cardId"
-          render={(props) => <Card {...props} token={authData.token} />}
-        />
-        {authData.redirect && <Redirect to="/boards" />}
+        <Route path="/boards" exact component={Boards} />
+        <Route exact path="/board/:boardId" component={Board} />
+        <Route path="/card/:cardId" component={Card} />
+        <Redirect to="/boards" />
       </Switch>
     );
   } else {
     routes = (
       <Switch>
-        <Route
-          path="/signup"
-          render={() => (
-            <Signup
-              onSignup={signupHandler}
-              loading={reqLoading}
-              error={reqError}
-            />
-          )}
-        />
-        <Route
-          path="/login"
-          render={() => (
-            <Login
-              onLogin={loginHandler}
-              loading={reqLoading}
-              error={reqError}
-            />
-          )}
-        />
-        {authData.redirect && <Redirect to="/login" />}
+        <Route path="/signup" component={Signup} />
+        <Route path="/login" component={Login} />
+        <Redirect to="/login" />
       </Switch>
     );
   }
 
-  return (
-    <Layout isAuth={authData.isAuth} logout={logoutAction}>
-      {routes}
-    </Layout>
-  );
+  return <Layout>{routes}</Layout>;
 }
 
 export default App;

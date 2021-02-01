@@ -14,7 +14,7 @@ import Name from "./Name/name";
 import Spinner from "../../components/UI/Spinner/spinner";
 import Tag from "./Tag/tag";
 import { updateObject } from "../../util/helpers";
-
+import { useAuth } from "../../contexts/AuthContext";
 import classes from "./card.module.scss";
 
 const Card = (props) => {
@@ -23,10 +23,10 @@ const Card = (props) => {
   const [reqError, setReqError] = useState(null);
   const [reqActionError, setReqActionError] = useState(null);
   const [reqDeleteLoading, setReqDeleteLoading] = useState(false);
+  const { token } = useAuth();
   let history = useHistory();
 
   const cardId = props.match.params.cardId;
-  const token = props.token;
   useEffect(() => {
     axios
       .get(`card/${cardId}`, {
@@ -198,7 +198,6 @@ const Card = (props) => {
               onSaveSelectedTag={saveSelectedTagHandler}
               onDeleteSelectedTags={deleteSelectedTagsHandler}
               onUpdateSelectedTags={updateSelectedTagsHandler}
-              token={token}
             />
             <Description
               description={cardData.description}

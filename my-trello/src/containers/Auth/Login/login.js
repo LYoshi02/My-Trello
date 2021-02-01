@@ -3,10 +3,14 @@ import React, { useState } from "react";
 import Alert from "../../../components/UI/Alert/alert";
 import Button from "../../../components/UI/Button/button";
 import { updateObject, checkInputValidity } from "../../../util/helpers";
+import { useAuth } from "../../../contexts/AuthContext";
 
 import classes from "../auth.module.scss";
 
-const Login = ({ onLogin, loading, error }) => {
+const Login = () => {
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const [loginForm, setLoginForm] = useState({
     email: {
@@ -29,6 +33,7 @@ const Login = ({ onLogin, loading, error }) => {
       elementConfig: {
         type: "password",
         placeholder: "Tu contraseña",
+        autoComplete: "on",
       },
       value: "",
       validation: {
@@ -49,7 +54,13 @@ const Login = ({ onLogin, loading, error }) => {
         user[key] = loginForm[key].value;
       }
 
-      onLogin(user);
+      setLoading(true);
+      login(user)
+        .then(() => {})
+        .catch((err) => {
+          setLoading(false);
+          setError(err.message);
+        });
     }
   };
 

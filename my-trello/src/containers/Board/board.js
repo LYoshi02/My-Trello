@@ -9,12 +9,13 @@ import Button from "../../components/UI/Button/button";
 import List from "./List/list";
 import NewList from "./NewList/newList";
 import Spinner from "../../components/UI/Spinner/spinner";
+import TransparentInput from "../../components/UI/TransparentInput/transparentInput";
+import DeleteModal from "../../components/Board/DeleteModal/deleteModal";
 import { updateObject } from "../../util/helpers";
 import { isMovementEqual } from "../../util/board";
+import { useAuth } from "../../contexts/AuthContext";
 
 import classes from "./board.module.scss";
-import DeleteModal from "../../components/Board/DeleteModal/deleteModal";
-import TransparentInput from "../../components/UI/TransparentInput/transparentInput";
 
 const Board = (props) => {
   const [userLists, setUserLists] = useState(null);
@@ -29,10 +30,10 @@ const Board = (props) => {
     },
     value: "",
   });
+  const { token } = useAuth();
   const history = useHistory();
 
   const { boardId } = props.match.params;
-  const { token } = props;
 
   const changeBoardName = useCallback(
     (value) => {
@@ -211,16 +212,11 @@ const Board = (props) => {
                 key={list._id}
                 listData={list}
                 boardId={boardId}
-                token={token}
                 onUpdateListData={updateListsDataHandler}
                 onDeleteList={deleteListHandler}
               />
             ))}
-            <NewList
-              boardId={boardId}
-              token={token}
-              onAddNewList={addListHandler}
-            />
+            <NewList boardId={boardId} onAddNewList={addListHandler} />
           </div>
         </DragDropContext>
       </>

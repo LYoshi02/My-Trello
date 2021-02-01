@@ -11,10 +11,11 @@ import DeleteModal from "../../../components/Board/DeleteModal/deleteModal";
 import Spinner from "../../../components/UI/Spinner/spinner";
 import TransparentInput from "../../../components/UI/TransparentInput/transparentInput";
 import { updateObject } from "../../../util/helpers";
+import { useAuth } from "../../../contexts/AuthContext";
 
 import classes from "./list.module.scss";
 
-const List = ({ listData, boardId, token, onUpdateListData, onDeleteList }) => {
+const List = ({ listData, boardId, onUpdateListData, onDeleteList }) => {
   const [isCreatingCard, setIsCreatingCard] = useState(false);
   const [reqCardLoading, setReqCardLoading] = useState(false);
   const [isDeletingList, setIsDeletingList] = useState(false);
@@ -27,6 +28,7 @@ const List = ({ listData, boardId, token, onUpdateListData, onDeleteList }) => {
     },
     value: "",
   });
+  const { token } = useAuth();
   const history = useHistory();
 
   const changeListName = useCallback(

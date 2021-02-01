@@ -5,16 +5,18 @@ import { IoPersonOutline } from "react-icons/io5";
 import axios from "../../axios-instance";
 import Modal from "../../components/Boards/Modal/modal";
 import Spinner from "../../components/UI/Spinner/spinner";
+import { useAuth } from "../../contexts/AuthContext";
 
 import classes from "./boards.module.scss";
 
-const Boards = ({ token }) => {
+const Boards = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [boardName, setBoardName] = useState("");
   const [boardColor, setBoardColor] = useState("green");
   const [loadingBoards, setLoadingBoards] = useState(true);
   const [userBoards, setUserBoards] = useState(null);
   const [reqLoading, setReqLoading] = useState(false);
+  const { token, currentUser } = useAuth();
 
   useEffect(() => {
     axios
@@ -72,7 +74,7 @@ const Boards = ({ token }) => {
       <div>
         <div className={classes.BoardTitle}>
           <h2>
-            <IoPersonOutline /> Tus Tableros
+            <IoPersonOutline /> Tableros de {currentUser.name}
           </h2>
         </div>
         <ul className={classes.Boards}>
@@ -110,7 +112,6 @@ const Boards = ({ token }) => {
   return (
     <>
       <div className={classes.BoardsContainer}>{boardElement}</div>
-
       {modal}
     </>
   );

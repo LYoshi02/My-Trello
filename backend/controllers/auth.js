@@ -2,7 +2,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 
+const Token = require("../models/token");
 const User = require("../models/user");
+const { generateAccessToken, generateRefreshToken } = require("../util/token");
 
 exports.signupUser = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -66,13 +68,104 @@ exports.loginUser = async (req, res, next) => {
       throw error;
     }
 
-    const token = jwt.sign(
-      { email: userExists.email, userId: userExists._id.toString() },
-      process.env.JWT_KEY,
-      { expiresIn: "24h" }
-    );
+    const tokenPayload = {
+      email: userExists.email,
+      name: userExists.name,
+      userId: userExists._id.toString(),
+    };
 
-    res.status(200).json({ token: token, userId: userExists._id.toString() });
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = generateRefreshToken(tokenPayload);
+
+    const token = new Token({ token: refreshToken });
+    await token.save();
+
+    res.status(200).json({
+      token: accessToken,
+      refreshToken,
+      user: { email: userExists.email, name: userExists.name },
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getUserData = (req, res, next) => {
+  const token = req.body.token;
+
+  try {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (err) {
+        const error = new Error("Token not valid");
+        error.statusCode = 403;
+        throw error;
+      }
+
+      res.status(200).json({ user: { name: user.name, email: user.email } });
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.logoutUser = async (req, res, next) => {
+  const token = req.body.token;
+
+  try {
+    const searchedToken = await Token.findOne({ token });
+    if (!searchedToken) {
+      const error = new Error("Token not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    await Token.deleteOne({ token });
+    res.sendStatus(204);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.refreshAccessToken = async (req, res, next) => {
+  const refreshToken = req.body.refreshToken;
+
+  try {
+    if (refreshToken == null) return res.sendStatus(401);
+
+    const tokenExists = await Token.findOne({ token: refreshToken });
+    if (!tokenExists) {
+      const error = new Error("Token not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+      if (err) {
+        const error = new Error("The token is not valid");
+        error.statusCode = 403;
+        throw error;
+      }
+
+      const tokenPayload = {
+        email: user.email,
+        name: user.name,
+        userId: user.userId,
+      };
+      const accessToken = generateAccessToken(tokenPayload);
+      res.status(201).json({
+        token: accessToken,
+        user: { email: user.email, name: user.name },
+      });
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

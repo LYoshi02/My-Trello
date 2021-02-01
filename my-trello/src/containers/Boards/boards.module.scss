@@ -3,7 +3,11 @@
 .BoardsContainer {
     width: 90vw;
     max-width: 120rem;
-    margin: 2rem auto;
+    padding: 2rem;
+    
+    @media only screen and(max-width: $bp-small) {
+        padding: 2rem 1rem;
+    }
 }
 
 .BoardTitle {

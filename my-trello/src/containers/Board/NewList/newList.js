@@ -5,13 +5,15 @@ import axios from "../../../axios-instance";
 import ActionButtons from "../../../components/UI/ActionButtons/actionButtons";
 import Button from "../../../components/UI/Button/button";
 import Spinner from "../../../components/UI/Spinner/spinner";
+import { useAuth } from "../../../contexts/AuthContext";
 
 import classes from "./newList.module.scss";
 
-const NewList = ({ boardId, token, onAddNewList }) => {
+const NewList = ({ boardId, onAddNewList }) => {
   const [listName, setListName] = useState("");
   const [creatingList, setCreatingList] = useState(false);
   const [reqNewListLoading, setReqNewListLoading] = useState(false);
+  const { token } = useAuth();
   const nameInputRef = useRef();
 
   const toggleCreatingList = () => {

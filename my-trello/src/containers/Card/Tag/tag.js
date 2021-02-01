@@ -4,6 +4,7 @@ import axios from "../../../axios-instance";
 import TagCreator from "../../../components/Card/Sections/Tags/TagCreator/tagCreator";
 import TagModal from "../../../components/Card/Sections/Tags/TagSelector/tagSelector";
 import TagViewer from "../../../components/Card/Sections/Tags/TagViewer/tagViewer";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const Tag = ({
   boardId,
@@ -14,7 +15,6 @@ const Tag = ({
   onSaveSelectedTag,
   onDeleteSelectedTags,
   onUpdateSelectedTags,
-  token,
 }) => {
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -22,6 +22,7 @@ const Tag = ({
   const [createCardColor, setCreateCardColor] = useState("");
   const [reqLoading, setReqLoading] = useState(false);
   const [tags, setTags] = useState([]);
+  const { token } = useAuth();
 
   useEffect(() => {
     axios

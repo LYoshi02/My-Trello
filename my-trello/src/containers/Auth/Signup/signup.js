@@ -1,12 +1,18 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import Alert from "../../../components/UI/Alert/alert";
 import Button from "../../../components/UI/Button/button";
 import { checkInputValidity, updateObject } from "../../../util/helpers";
+import { useAuth } from "../../../contexts/AuthContext";
 
 import classes from "../auth.module.scss";
 
-const Signup = ({ onSignup, loading, error }) => {
+const Signup = () => {
+  const { signup } = useAuth();
+  const history = useHistory();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const [signupForm, setSignupForm] = useState({
     name: {
@@ -44,6 +50,7 @@ const Signup = ({ onSignup, loading, error }) => {
       elementConfig: {
         type: "password",
         placeholder: "Tu contraseña",
+        autoComplete: "on",
       },
       value: "",
       validation: {
@@ -63,7 +70,17 @@ const Signup = ({ onSignup, loading, error }) => {
       for (let key in signupForm) {
         user[key] = signupForm[key].value;
       }
-      onSignup(user);
+
+      setLoading(true);
+      signup(user)
+        .then(() => {
+          setLoading(false);
+          history.push("/login");
+        })
+        .catch((err) => {
+          setLoading(false);
+          setError(err.message);
+        });
     }
   };
 

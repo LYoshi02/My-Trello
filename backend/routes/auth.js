@@ -40,4 +40,10 @@ router.post(
   authController.loginUser
 );
 
+router.post("/auth/user", authController.getUserData);
+
+router.post("/auth/refresh-token", authController.refreshAccessToken);
+
+router.post("/auth/logout", authController.logoutUser);
+
 module.exports = router;

@@ -23,7 +23,7 @@
 
     @media only screen and(max-width: $bp-medium) {
         grid-template-columns: none;
-        grid-template-rows: 1fr 2fr;
+        grid-template-rows: repeat(2, min-content);
         row-gap: 4rem;
     }
 }

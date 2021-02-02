@@ -6,10 +6,13 @@ const AuthContext = React.createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
+const ACCESS_TOKEN_DURATION = 60 * 60 * 1000; // 1 hour
+
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleteTimeoutId, setDeleteTimeoutId] = useState(null);
 
   function login(user) {
     return axios
@@ -17,15 +20,16 @@ export const AuthProvider = ({ children }) => {
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("refreshToken", res.data.refreshToken);
-        const remainingMilliseconds = 60 * 60 * 1000;
+        const remainingMilliseconds = ACCESS_TOKEN_DURATION;
         const expiryDate = new Date(
           new Date().getTime() + remainingMilliseconds
         );
         localStorage.setItem("expiryDate", expiryDate.toISOString());
-        deleteExpiredToken(remainingMilliseconds);
+        const timerId = deleteExpiredToken(remainingMilliseconds);
 
         setToken(res.data.token);
         setCurrentUser(res.data.user);
+        setDeleteTimeoutId(timerId);
       })
       .catch((err) => {
         const message = err.response ? err.response.data.message : err.message;
@@ -60,10 +64,12 @@ export const AuthProvider = ({ children }) => {
 
     setToken(null);
     setCurrentUser(null);
+    setDeleteTimeoutId(null);
   }
 
   const deleteExpiredToken = useCallback((milliseconds) => {
-    setTimeout(() => {
+    return setTimeout(() => {
+      setLoading(true);
       localStorage.removeItem("token");
       localStorage.removeItem("expiryDate");
       setToken(null);
@@ -78,19 +84,22 @@ export const AuthProvider = ({ children }) => {
       return logout();
     }
 
+    setLoading(true);
     axios
       .post("auth/refresh-token", { refreshToken })
       .then((res) => {
         localStorage.setItem("token", res.data.token);
-        const remainingMilliseconds = 60 * 60 * 1000;
+        const remainingMilliseconds = ACCESS_TOKEN_DURATION;
         const expiryDate = new Date(
           new Date().getTime() + remainingMilliseconds
         );
         localStorage.setItem("expiryDate", expiryDate.toISOString());
-        deleteExpiredToken(remainingMilliseconds);
+        const timerId = deleteExpiredToken(remainingMilliseconds);
 
         setToken(res.data.token);
         setCurrentUser(res.data.user);
+        setDeleteTimeoutId(timerId);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -102,7 +111,11 @@ export const AuthProvider = ({ children }) => {
     if (!token && refreshToken) {
       refreshAccessToken();
     }
-  }, [token, refreshAccessToken]);
+
+    return () => {
+      clearTimeout(deleteTimeoutId);
+    };
+  }, [token, refreshAccessToken, deleteTimeoutId]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -114,8 +127,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     if (new Date(expiryDate) <= new Date()) {
-      refreshAccessToken();
-      return setLoading(false);
+      return refreshAccessToken();
     }
 
     axios
@@ -123,12 +135,15 @@ export const AuthProvider = ({ children }) => {
       .then((res) => {
         const remainingMilliseconds =
           new Date(expiryDate).getTime() - new Date().getTime();
-        deleteExpiredToken(remainingMilliseconds);
+        const timerId = deleteExpiredToken(remainingMilliseconds);
+
+        setDeleteTimeoutId(timerId);
         setToken(token);
         setCurrentUser(res.data.user);
         setLoading(false);
       })
       .catch((err) => {
+        console.log(err);
         setLoading(false);
       });
   }, [refreshAccessToken, deleteExpiredToken]);
